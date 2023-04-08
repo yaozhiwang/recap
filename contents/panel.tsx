@@ -140,7 +140,7 @@ const PanelOverlay = () => {
                 position == PanelPosition.Bottom ? "right-8 left-8" : "",
                 position == PanelPosition.Left ? "w-[448]" : "",
                 position == PanelPosition.Right ? "w-[448]" : "",
-                "fixed flex cursor-default flex-row justify-between rounded-t-2xl bg-neutral-200 py-4 px-6 dark:bg-neutral-800"
+                "fixed flex cursor-default flex-row justify-between rounded-t-2xl bg-neutral-200 px-2 py-4 dark:bg-neutral-800"
               )}>
               <button
                 className="cursor-pointer hover:text-slate-500 dark:hover:text-slate-400"
@@ -175,7 +175,7 @@ const PanelOverlay = () => {
                   }
                 ].map((value, id) => {
                   return (
-                    <div key={id}>
+                    <div className="flex flex-row items-center" key={id}>
                       {position === value.position ? (
                         <button
                           className="cursor-pointer hover:text-slate-500 dark:hover:text-slate-400"
