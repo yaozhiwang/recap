@@ -14,7 +14,8 @@ import {
   VscLayoutSidebarLeft as DockLeftIcon,
   VscLayoutSidebarLeftOff as DockLeftOffIcon,
   VscLayoutSidebarRight as DockRightIcon,
-  VscLayoutSidebarRightOff as DockRightOffIcon
+  VscLayoutSidebarRightOff as DockRightOffIcon,
+  IoRefreshCircleOutline as RerunIcon
 } from "~icons"
 import { classNames } from "~utils"
 import { useFullTextContent } from "./hooks/fulltext-content"
@@ -44,6 +45,7 @@ const PanelOverlay = () => {
   const [show, setShow] = useState(false)
   const [position, setPosition] = useState<PanelPosition>()
   const pageContent = useRef("")
+  const textContent = useRef("")
   const [summarySource, setSummarySource] = useState<"page" | "text">()
 
   const [pageSummary, startSummarizePage] = useSummaryContent()
@@ -85,7 +87,8 @@ const PanelOverlay = () => {
           // TODO: show notification to user that there is a pending summary
           return
         }
-        startSummarizeText(msg?.text)
+        textContent.current = msg?.text
+        startSummarizeText(textContent.current)
       } else if (msg?.name === MessageNames.SummarizePage) {
         setShow(true)
         setSummarySource("page")
@@ -114,6 +117,16 @@ const PanelOverlay = () => {
       textSummaryRef.current = textSummary
     }
   }, [textSummary])
+
+  function rerun() {
+    if (summarySource === "text") {
+      startSummarizeText(textContent.current)
+    }
+
+    if (summarySource === "page") {
+      startSummarizePage(pageContent.current)
+    }
+  }
 
   return (
     <>
@@ -149,53 +162,65 @@ const PanelOverlay = () => {
                 }}>
                 <CloseIcon className="h-6 w-6" />
               </button>
-              <div className="flex flex-row items-center gap-1">
+              <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-row items-center gap-1">
                 <img
                   src={logo}
                   className="h-6 w-6 rounded-lg object-scale-down"
                 />
                 <span className="font-[cursive]">Recap</span>
               </div>
-              <div className="flex flex-row">
-                {[
-                  {
-                    icon: DockLeftIcon,
-                    offIcon: DockLeftOffIcon,
-                    position: PanelPosition.Left
-                  },
-                  {
-                    icon: DockBottomIcon,
-                    offIcon: DockBottomOffIcon,
-                    position: PanelPosition.Bottom
-                  },
-                  {
-                    icon: DockRightIcon,
-                    offIcon: DockRightOffIcon,
-                    position: PanelPosition.Right
+              <div className="flex flex-row items-center gap-2">
+                <button
+                  className="cursor-pointer enabled:hover:text-slate-500 disabled:cursor-not-allowed disabled:opacity-50 enabled:dark:hover:text-slate-400"
+                  disabled={
+                    !summaryContent || isRunningStatus(summaryContent?.status)
                   }
-                ].map((value, id) => {
-                  return (
-                    <div className="flex flex-row items-center" key={id}>
-                      {position === value.position ? (
-                        <button
-                          className="cursor-pointer hover:text-slate-500 dark:hover:text-slate-400"
-                          onClick={() => {
-                            setPosition(value.position)
-                          }}>
-                          <value.icon className="h-6 w-6" />
-                        </button>
-                      ) : (
-                        <button
-                          className="cursor-pointer hover:text-slate-500 dark:hover:text-slate-400"
-                          onClick={() => {
-                            setPosition(value.position)
-                          }}>
-                          <value.offIcon className="h-6 w-6" />
-                        </button>
-                      )}
-                    </div>
-                  )
-                })}
+                  onClick={(e) => {
+                    rerun()
+                  }}>
+                  <RerunIcon className="h-6 w-6" />
+                </button>
+                <div className="flex flex-row">
+                  {[
+                    {
+                      icon: DockLeftIcon,
+                      offIcon: DockLeftOffIcon,
+                      position: PanelPosition.Left
+                    },
+                    {
+                      icon: DockBottomIcon,
+                      offIcon: DockBottomOffIcon,
+                      position: PanelPosition.Bottom
+                    },
+                    {
+                      icon: DockRightIcon,
+                      offIcon: DockRightOffIcon,
+                      position: PanelPosition.Right
+                    }
+                  ].map((value, id) => {
+                    return (
+                      <div className="flex flex-row items-center" key={id}>
+                        {position === value.position ? (
+                          <button
+                            className="cursor-pointer hover:text-slate-500 dark:hover:text-slate-400"
+                            onClick={() => {
+                              setPosition(value.position)
+                            }}>
+                            <value.icon className="h-6 w-6" />
+                          </button>
+                        ) : (
+                          <button
+                            className="cursor-pointer hover:text-slate-500 dark:hover:text-slate-400"
+                            onClick={() => {
+                              setPosition(value.position)
+                            }}>
+                            <value.offIcon className="h-6 w-6" />
+                          </button>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
             </div>
             <div className="absolute top-[56] bottom-[32] w-full">
