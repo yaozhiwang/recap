@@ -10,4 +10,9 @@ export enum PortNames {
 
 export const PreviewConfigKey: string = "preview.config"
 
+export enum ShortcutNames {
+  ToggleEnable = "toggle-enable",
+  SummarizePage = "summarize-page"
+}
+
 export const isFirstCacheKey: string = "cache.isFirst"

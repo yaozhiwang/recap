@@ -1,5 +1,5 @@
 import { Storage } from "@plasmohq/storage"
-import { ConfigKeys, saveDefaultConfigs } from "~/config"
+import { ConfigKeys, saveDefaultConfigs, toggleEnable } from "~/config"
 
 import {
   ChatGPTWebAppProviderConfig,
@@ -9,7 +9,12 @@ import {
   providerTypeConfigKey
 } from "~/config"
 import type { Provider } from "~/provider"
-import { isFirstCacheKey, MessageNames, PortNames } from "~constants"
+import {
+  isFirstCacheKey,
+  MessageNames,
+  PortNames,
+  ShortcutNames
+} from "~constants"
 import {
   ChatGPTWebAppProvider,
   getChatGPTAccessToken
@@ -79,6 +84,19 @@ chrome.contextMenus.onClicked.addListener((item, tab) => {
   chrome.tabs.sendMessage(tab.id, {
     name: MessageNames.SummarizeText,
     text: item.selectionText
+  })
+})
+
+chrome.commands.onCommand.addListener((command) => {
+  chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+    if (!tab.url.startsWith("http://") && !tab.url.startsWith("https://")) {
+      return
+    }
+    if (command === ShortcutNames.ToggleEnable) {
+      toggleEnable(tab.url)
+    } else if (command === ShortcutNames.SummarizePage) {
+      chrome.tabs.sendMessage(tab.id, { name: MessageNames.SummarizePage })
+    }
   })
 })
 

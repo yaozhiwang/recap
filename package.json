@@ -62,7 +62,7 @@
       }
     ],
     "commands": {
-      "toggle-enabled": {
+      "toggle-enable": {
         "suggested_key": {
           "default": "Ctrl+U",
           "mac": "Command+U"

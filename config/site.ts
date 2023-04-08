@@ -1,5 +1,6 @@
 import { Storage } from "@plasmohq/storage"
 import normalizeUrl from "normalize-url"
+import { ConfigKeys, Mode } from "~config"
 
 export enum SiteStatus {
   Default = "default",
@@ -67,4 +68,22 @@ export async function saveDefaultSiteConfigs() {
     }
   })
   await storage.set(HostListConfigKey, hosts)
+}
+
+export async function toggleEnable(url: string) {
+  const storage = new Storage()
+
+  const mode = await storage.get(ConfigKeys.mode)
+  let pages = await storage.get<{}>(PageListConfigKey)
+  if (pages === undefined) {
+    pages = {}
+  }
+  const pageKey = getPageItemKey(url, false)
+  if (pages[pageKey] === undefined || pages[pageKey] === SiteStatus.Default) {
+    pages[pageKey] =
+      mode === Mode.Active ? SiteStatus.Disabled : SiteStatus.Enabled
+  } else {
+    pages[pageKey] = SiteStatus.Default
+  }
+  await storage.set(PageListConfigKey, pages)
 }

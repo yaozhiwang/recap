@@ -1,10 +1,10 @@
 import { Storage } from "@plasmohq/storage"
 import { useCallback, useEffect, useState } from "react"
-import { isFirstCacheKey } from "~constants"
+import { ShortcutNames, isFirstCacheKey } from "~constants"
 
-const ShortcutsName = {
-  "toggle-enabled": "Toggle enable/disable",
-  "summarize-page": "Summarize current page"
+const ShortcutsDisplayName = {
+  [ShortcutNames.ToggleEnable]: "Toggle enable/disable",
+  [ShortcutNames.SummarizePage]: "Summarize current page"
 }
 
 export default function ShortcutsTable() {
@@ -36,7 +36,7 @@ export default function ShortcutsTable() {
           .map(({ name, shortcut }) => (
             <tr key={name}>
               <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium">
-                {ShortcutsName[name]}
+                {ShortcutsDisplayName[name]}
               </td>
               <td className="whitespace-nowrap px-3 py-4 text-sm">
                 {shortcut == "" ? (
