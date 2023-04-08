@@ -22,6 +22,15 @@ async function request(
       Authorization: `Bearer ${token}`
     },
     body: data === undefined ? undefined : JSON.stringify(data)
+  }).catch((err) => {
+    if (err instanceof TypeError) {
+      throw new ProviderError(
+        "Network error, please check your network.",
+        ProviderErrorCode.NETWORK_ERROR
+      )
+    } else {
+      throw err
+    }
   })
 }
 
@@ -33,7 +42,18 @@ export async function getChatGPTAccessToken(): Promise<string> {
   if (cache.get(KEY_ACCESS_TOKEN)) {
     return cache.get(KEY_ACCESS_TOKEN)
   }
-  const resp = await fetch("https://chat.openai.com/api/auth/session")
+  const resp = await fetch("https://chat.openai.com/api/auth/session").catch(
+    (err) => {
+      if (err instanceof TypeError) {
+        throw new ProviderError(
+          "Network error, please check your network.",
+          ProviderErrorCode.NETWORK_ERROR
+        )
+      } else {
+        throw err
+      }
+    }
+  )
   if (resp.status === 403) {
     throw new ProviderError(
       "You have to pass Cloudflare check",

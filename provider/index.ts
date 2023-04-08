@@ -20,7 +20,7 @@ export abstract class Provider {
     try {
       return await this.doSummarize(`${this.#prompt}\n\n${text}`, params)
     } catch (err) {
-      console.error(JSON.stringify(err))
+      console.error(err, JSON.stringify(err))
       if (err instanceof ProviderError) {
         params.onError(err)
       } else if (!params.signal?.aborted) {

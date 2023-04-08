@@ -12,7 +12,16 @@ export async function fetchSSE(
   options: RequestInit & { onMessage: (message: string) => void }
 ) {
   const { onMessage, ...fetchOptions } = options
-  const resp = await fetch(resource, fetchOptions)
+  const resp = await fetch(resource, fetchOptions).catch((err) => {
+    if (err instanceof TypeError) {
+      throw new ProviderError(
+        "Network error, please check your network.",
+        ProviderErrorCode.NETWORK_ERROR
+      )
+    } else {
+      throw err
+    }
+  })
   if (!resp.ok) {
     const error = await resp.json().catch(() => ({}))
     if (isEmpty(error)) {
