@@ -9,3 +9,5 @@ export enum PortNames {
 }
 
 export const PreviewConfigKey: string = "preview.config"
+
+export const isFirstCacheKey: string = "cache.isFirst"

@@ -60,6 +60,22 @@
           "options.html"
         ]
       }
-    ]
+    ],
+    "commands": {
+      "toggle-enabled": {
+        "suggested_key": {
+          "default": "Ctrl+U",
+          "mac": "Command+U"
+        },
+        "description": "Toggle enable/disable for current page."
+      },
+      "summarize-page": {
+        "suggested_key": {
+          "default": "Ctrl+I",
+          "mac": "Command+I"
+        },
+        "description": "Summarize the content on current page."
+      }
+    }
   }
 }

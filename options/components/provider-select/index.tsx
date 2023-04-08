@@ -35,7 +35,7 @@ export default function ProviderSelect() {
               className={({ active, checked }) =>
                 classNames(
                   checked
-                    ? "border-0 bg-indigo-600 text-white hover:bg-indigo-700"
+                    ? "border-0 bg-indigo-600 text-white hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600"
                     : "border border-neutral-200 hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-800",
                   "flex flex-1 cursor-pointer select-none items-center justify-center whitespace-nowrap rounded-md  py-4 px-3 text-sm font-medium"
                 )

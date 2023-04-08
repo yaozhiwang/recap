@@ -6,12 +6,13 @@ import { ConfigKeys, PanelPosition, Theme } from "~config"
 import { useTheme } from "~hooks"
 import { getExtensionVersion } from "~utils"
 import {
-  SavableInput,
   ExcludeCantainerCheckBox,
+  FullTextContainerStep,
   HeadingAnchorSelect,
   ModeRadioGroup,
-  FullTextContainerStep,
-  ProviderTab
+  ProviderTab,
+  SavableInput,
+  ShortcutsTable
 } from "./components"
 import "./options.css"
 
@@ -100,6 +101,11 @@ function IndexOptions() {
         <div className="flex flex-col gap-2">
           <h3 className="text-2xl font-bold leading-6">Mode</h3>
           <ModeRadioGroup />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <h3 className="text-2xl font-bold leading-6">Shortcuts</h3>
+          <ShortcutsTable />
         </div>
 
         <div className="flex flex-col gap-2">

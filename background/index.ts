@@ -9,7 +9,7 @@ import {
   providerTypeConfigKey
 } from "~/config"
 import type { Provider } from "~/provider"
-import { MessageNames, PortNames } from "~constants"
+import { isFirstCacheKey, MessageNames, PortNames } from "~constants"
 import {
   ChatGPTWebAppProvider,
   getChatGPTAccessToken
@@ -21,7 +21,8 @@ export {}
 chrome.runtime.onInstalled.addListener(async (details) => {
   await saveDefaultConfigs()
 
-  if (details.reason === "install") {
+  if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
+    await new Storage().set(isFirstCacheKey, true)
     chrome.runtime.openOptionsPage()
   }
 })

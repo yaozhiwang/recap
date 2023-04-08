@@ -82,7 +82,7 @@ export default function ResultTextArea(props: { content: SummaryContent }) {
               className={classNames(
                 copied
                   ? "border-green-500 text-green-500"
-                  : "border-neutral-200 text-neutral-600 hover:border-neutral-200 hover:bg-neutral-100 dark:border-neutral-500 dark:text-neutral-400 dark:hover:border-neutral-400",
+                  : "border-neutral-200 text-neutral-600 hover:bg-neutral-100 dark:border-neutral-500 dark:text-neutral-400 dark:hover:border-neutral-400",
                 "rounded-md border bg-white p-1 dark:bg-neutral-900"
               )}>
               {copied ? (
