@@ -24,6 +24,7 @@ import {
   SummaryStatus,
   useSummaryContent
 } from "./hooks/summary-content"
+import ProviderInfo from "~components/provider-info"
 
 export const config: PlasmoCSConfig = {
   matches: ["http://*/*", "https://*/*"]
@@ -132,7 +133,7 @@ const PanelOverlay = () => {
               isRunningStatus(summaryContent?.status)
                 ? "cursor-wait"
                 : "cursor-default",
-              "fixed overflow-y-scroll rounded-2xl bg-white text-black shadow-lg shadow-neutral-300 dark:bg-neutral-900 dark:text-white"
+              "fixed overflow-hidden rounded-2xl bg-white text-black shadow-lg shadow-neutral-300 dark:bg-neutral-900 dark:text-white"
             )}>
             <div
               className={classNames(
@@ -197,8 +198,11 @@ const PanelOverlay = () => {
                 })}
               </div>
             </div>
-            <div className="mt-[56] p-6">
+            <div className="absolute top-[56] bottom-[32] w-full">
               <ResultTextArea content={summaryContent} />
+            </div>
+            <div className="absolute bottom-0 w-full">
+              <ProviderInfo />
             </div>
           </div>
         </div>

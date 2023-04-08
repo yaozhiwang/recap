@@ -7,7 +7,7 @@ export default function ResultTextArea(props: { content: SummaryContent }) {
   const { content } = props
   if (content?.status == SummaryStatus.Loading) {
     return (
-      <div className="text-center">
+      <div className="p-6 text-center">
         <div role="status">
           <svg
             aria-hidden="true"
@@ -34,7 +34,7 @@ export default function ResultTextArea(props: { content: SummaryContent }) {
       content.data.code === ProviderErrorCode.CHATGPT_UNAUTHORIZED
     ) {
       return (
-        <div>
+        <div className="p-6">
           Please login and pass Cloudflare check at{" "}
           <a
             className="underline"
@@ -51,11 +51,15 @@ export default function ResultTextArea(props: { content: SummaryContent }) {
         </div>
       )
     }
-    return <div className="text-red-500">{content.data.message}</div>
+    return <div className="p-6 text-red-500">{content.data.message}</div>
   }
   return (
-    <ReactMarkdown rehypePlugins={[[rehypeHighlight, { detect: true }]]}>
-      {content?.data}
-    </ReactMarkdown>
+    <div className="h-full overflow-hidden ">
+      <div className="h-full overflow-y-scroll px-4 py-6">
+        <ReactMarkdown rehypePlugins={[[rehypeHighlight, { detect: true }]]}>
+          {content?.data}
+        </ReactMarkdown>
+      </div>
+    </div>
   )
 }

@@ -1,18 +1,18 @@
 import { RadioGroup } from "@headlessui/react"
 import { useStorage } from "@plasmohq/storage/hook"
-import { ProviderType, providerTypeConfigKey } from "~config"
+import {
+  ProviderType,
+  ProviderTypeName,
+  providerTypeConfigKey
+} from "~config/provider"
 import { classNames } from "~utils"
 import ChatGPTWebAppProvider from "./chatgpt-webapp"
 import OpenAIAPIProvider from "./openai-api"
 
-const names = {
-  [ProviderType.ChatGPTWebApp]: "ChatGPT WebApp",
-  [ProviderType.OpenaiChatApi]: "OpenAI API"
-}
 const options = Object.entries(ProviderType).map(([key, value]) => ({
   key,
   value,
-  name: names[value]
+  name: ProviderTypeName[value]
 }))
 
 export default function ProviderSelect() {

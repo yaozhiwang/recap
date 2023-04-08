@@ -47,6 +47,17 @@
     "permissions": [
       "contextMenus",
       "activeTab"
+    ],
+    "web_accessible_resources": [
+      {
+        "matches": [
+          "http://*/*",
+          "https://*/*"
+        ],
+        "resources": [
+          "options.html"
+        ]
+      }
     ]
   }
 }

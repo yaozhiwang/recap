@@ -26,6 +26,7 @@ import {
   SummaryStatus,
   useSummaryContent
 } from "./hooks/summary-content"
+import ProviderInfo from "~components/provider-info"
 
 export const config: PlasmoCSConfig = {
   matches: ["http://*/*", "https://*/*"]
@@ -127,12 +128,12 @@ const PassageInline = (props: { anchor: PlasmoCSUIAnchor }) => {
       {show && numWords > minWords ? (
         <div className={`${theme == Theme.Dark ? "dark" : ""}`}>
           <details
-            className="group/collaps mb-2 mt-2 rounded-lg border border-slate-300 bg-white p-1 text-black duration-300 open:w-full dark:bg-neutral-900 dark:text-white"
+            className="group/collaps relative mb-2 mt-2 overflow-hidden rounded-lg border border-slate-300 bg-white text-black duration-300 open:w-full dark:bg-neutral-900 dark:text-white"
             open={open}
             onToggle={() => {
               setOpen(!open)
             }}>
-            <summary className="flex cursor-row-resize items-center justify-between gap-0">
+            <summary className="flex cursor-row-resize items-center justify-between gap-0 p-1">
               <div>
                 <div className="flex flex-row group-open/collaps:hidden">
                   <ToggleButton
@@ -174,9 +175,12 @@ const PassageInline = (props: { anchor: PlasmoCSUIAnchor }) => {
             <div
               className={classNames(
                 isRunningStatus(summaryContent?.status) ? "cursor-wait" : "",
-                "px-5 py-3 text-sm"
+                "text-sm"
               )}>
               <ResultTextArea content={summaryContent} />
+            </div>
+            <div className="w-full">
+              <ProviderInfo />
             </div>
           </details>
         </div>

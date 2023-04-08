@@ -10,9 +10,9 @@ import {
   SummarizeButton
 } from "./components"
 import "./popup.css"
+import { useOptionsUrl } from "~hooks/options-url"
 
 function IndexPopup() {
-  const [optionUrl, setOptionUrl] = useState("")
   const [statusSwitchState, setStatusSwitchState] =
     useState<StatusSwitchState>()
   const [settingsOpen, setSettingsOpen] = useState(false)
@@ -26,9 +26,7 @@ function IndexPopup() {
     }
   }, [theme])
 
-  useEffect(() => {
-    setOptionUrl(chrome.runtime.getURL("/options.html"))
-  }, [])
+  const [optionsUrl] = useOptionsUrl()
 
   const [url] = useTabUrl()
   const {
@@ -127,7 +125,7 @@ function IndexPopup() {
             <span>{`Running in `}</span>
             <a
               className="capitalize text-black underline dark:text-white"
-              href={optionUrl}
+              href={optionsUrl}
               target="_blank"
               rel="noreferrer">{`${mode} mode`}</a>
           </div>

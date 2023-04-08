@@ -36,6 +36,16 @@ function IndexOptions() {
     }
   }, [theme])
 
+  useEffect(() => {
+    if (document.location.hash !== "") {
+      setTimeout(() => {
+        document
+          .querySelector(document.location.hash)
+          .scrollIntoView({ behavior: "smooth", block: "start" })
+      }, 300)
+    }
+  }, [])
+
   const onThemeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let theme = e.target.value as Theme
     setTheme(theme)

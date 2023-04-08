@@ -1,8 +1,14 @@
 import { Storage } from "@plasmohq/storage"
+import { useStorage } from "@plasmohq/storage/hook"
 
 export enum ProviderType {
   ChatGPTWebApp = "chatgpt-webapp",
   OpenaiChatApi = "openai-chatapi"
+}
+
+export const ProviderTypeName = {
+  [ProviderType.ChatGPTWebApp]: "ChatGPT WebApp",
+  [ProviderType.OpenaiChatApi]: "OpenAI API"
 }
 
 export interface ChatGPTWebAppProviderConfig {
@@ -42,4 +48,8 @@ export async function saveDefaultProviderConfigs() {
 
 export function getProviderConfigKey(provider: ProviderType) {
   return `${providerTypeConfigKey}.${provider}`
+}
+
+export function useProviderType() {
+  return useStorage<ProviderType>(providerTypeConfigKey)
 }
