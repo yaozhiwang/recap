@@ -132,7 +132,7 @@ const PassageInline = (props: { anchor: PlasmoCSUIAnchor }) => {
             onToggle={() => {
               setOpen(!open)
             }}>
-            <summary className="flex cursor-row-resize justify-between gap-0">
+            <summary className="flex cursor-row-resize items-center justify-between gap-0">
               <div>
                 <div className="flex flex-row group-open/collaps:hidden">
                   <ToggleButton
@@ -153,7 +153,11 @@ const PassageInline = (props: { anchor: PlasmoCSUIAnchor }) => {
                 </div>
                 <CloseIcon className="hidden h-6 w-6 cursor-pointer hover:text-slate-500 group-open/collaps:inline dark:hover:text-slate-400" />
               </div>
-
+              {open ? (
+                <div className="mx-2">
+                  {summarySource === "this" ? "Summary" : "Recap"}
+                </div>
+              ) : null}
               <button
                 className="hidden cursor-pointer enabled:hover:text-slate-500 disabled:cursor-not-allowed disabled:opacity-50 group-open/collaps:inline enabled:dark:hover:text-slate-400"
                 disabled={
