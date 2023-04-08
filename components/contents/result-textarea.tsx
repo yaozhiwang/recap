@@ -1,10 +1,22 @@
+import { useEffect, useState } from "react"
+import { CopyToClipboard } from "react-copy-to-clipboard"
 import ReactMarkdown from "react-markdown"
 import rehypeHighlight from "rehype-highlight"
 import { SummaryContent, SummaryStatus } from "~contents/hooks/summary-content"
+import { HiCheck as CopiedIcon, TbCopy as CopyIcon } from "~icons"
 import { ProviderErrorCode } from "~provider/errors"
+import { classNames } from "~utils"
 
 export default function ResultTextArea(props: { content: SummaryContent }) {
   const { content } = props
+  const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    if (copied) {
+      setTimeout(() => setCopied(false), 1000)
+    }
+  }, [copied])
+
   if (content?.status == SummaryStatus.Loading) {
     return (
       <div className="p-6 text-center">
@@ -54,7 +66,35 @@ export default function ResultTextArea(props: { content: SummaryContent }) {
     return <div className="p-6 text-red-500">{content.data.message}</div>
   }
   return (
-    <div className="h-full overflow-hidden ">
+    <div className="group relative h-full overflow-hidden ">
+      <div
+        className={classNames(
+          copied ? "visible" : "invisible group-hover:visible",
+          "absolute top-2 right-2"
+        )}>
+        {!!content?.data && (
+          <CopyToClipboard
+            text={content?.data}
+            onCopy={() => {
+              setCopied(true)
+            }}>
+            <button
+              className={classNames(
+                copied
+                  ? "border-green-500 text-green-500"
+                  : "border-neutral-200 text-neutral-600 hover:border-neutral-200 hover:bg-neutral-100 dark:border-neutral-500 dark:text-neutral-400 dark:hover:border-neutral-400",
+                "rounded-md border bg-white p-1 dark:bg-neutral-900"
+              )}>
+              {copied ? (
+                <CopiedIcon className="h-6 w-6" />
+              ) : (
+                <CopyIcon className="h-6 w-6" />
+              )}
+            </button>
+          </CopyToClipboard>
+        )}
+      </div>
+
       <div className="h-full overflow-y-scroll px-4 py-6">
         <ReactMarkdown rehypePlugins={[[rehypeHighlight, { detect: true }]]}>
           {content?.data}
