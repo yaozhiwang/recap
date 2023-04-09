@@ -2,8 +2,8 @@ import { Storage } from "@plasmohq/storage"
 import {
   ConfigKeys,
   saveDefaultConfigs,
-  toggleEnablePage,
-  toggleEnableHost
+  toggleEnableHost,
+  toggleEnablePage
 } from "~/config"
 
 import {
@@ -136,6 +136,19 @@ chrome.runtime.onConnect.addListener((port) => {
           error: { code: error.code, message: error.message }
         })
       }
+    })
+  }
+})
+
+chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
+  if (msg.name == MessageNames.UpdateEnabled) {
+    const { pageEnabled, hostEnabled } = msg.enabledDetails
+
+    chrome.action.setTitle({
+      tabId: sender.tab.id,
+      title: `Recap\nDomain: ${hostEnabled ? "Enabled" : "Disabled"}\nPage: ${
+        pageEnabled ? "Enabled" : "Disabled"
+      }\n`
     })
   }
 })

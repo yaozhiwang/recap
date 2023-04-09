@@ -7,7 +7,7 @@ import { useSiteConfig } from "./site-config"
 export function useSiteConfigWithPreview(url: string) {
   const [config, setConfig] = useState<SourceTextConfig>()
 
-  const { enabled, effectiveConfig } = useSiteConfig(url)
+  const { enabled, enabledDetails, effectiveConfig } = useSiteConfig(url)
   const [previewConfig] = useStorage<SourceTextConfig>(PreviewConfigKey)
 
   useEffect(() => {
@@ -22,6 +22,7 @@ export function useSiteConfigWithPreview(url: string) {
 
   return {
     enabled,
+    enabledDetails,
     config
   } as const
 }

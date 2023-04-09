@@ -21,6 +21,11 @@ export type EnabledType = {
   forcePage: boolean
 }
 
+export type EnabledDetails = {
+  pageEnabled: boolean
+  hostEnabled: boolean
+}
+
 export type ConfigType = {
   type: "Page" | "Host" | "Default"
   parentType: "Host" | "Default" | "None"
@@ -29,6 +34,7 @@ export type ConfigType = {
 export function useSiteConfig(url?: string) {
   const [enabled, setEnabled] = useState<boolean>()
   const [enabledType, setEnabledType] = useState<EnabledType>()
+  const [enabledDetails, setEnabledDetails] = useState<EnabledDetails>()
 
   const [mode] = useStorage(ConfigKeys.mode)
   const [pages, setPages] = useStorage<{ [k: string]: SiteStatus }>(
@@ -109,6 +115,45 @@ export function useSiteConfig(url?: string) {
     }
 
     updateEnabled()
+  }, [mode, pages, hosts, pageKey, hostKey])
+
+  useEffect(() => {
+    function updateEnabledDetails() {
+      if (pageKey === undefined || hostKey === undefined) {
+        return
+      }
+      let pageEnabled = false
+      let hostEnabled = false
+      if (
+        hosts === undefined ||
+        hosts[hostKey] === undefined ||
+        hosts[hostKey] === SiteStatus.Default
+      ) {
+        hostEnabled = mode === Mode.Active
+        if (
+          pages === undefined ||
+          pages[pageKey] === undefined ||
+          pages[pageKey] === SiteStatus.Default
+        ) {
+          pageEnabled = mode === Mode.Active
+        } else {
+          pageEnabled = pages[pageKey] === SiteStatus.Enabled
+        }
+      } else {
+        hostEnabled = hosts[hostKey] === SiteStatus.Enabled
+        if (pages && pages[pageKey] === SiteStatus.ForceEnabled) {
+          pageEnabled = true
+        } else if (pages && pages[pageKey] === SiteStatus.ForceDisabled) {
+          pageEnabled = false
+        } else {
+          pageEnabled = hostEnabled
+        }
+      }
+
+      setEnabledDetails({ pageEnabled, hostEnabled })
+    }
+
+    updateEnabledDetails()
   }, [mode, pages, hosts, pageKey, hostKey])
 
   function toggleEnabled(isPage: boolean, isManually: boolean) {
@@ -251,6 +296,7 @@ export function useSiteConfig(url?: string) {
     mode,
     enabled,
     enabledType,
+    enabledDetails,
     effectiveConfig,
     effectiveConfigType,
     toggleEnabled,

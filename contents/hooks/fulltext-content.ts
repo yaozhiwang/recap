@@ -6,7 +6,7 @@ import { useFullTextContainer } from "./fulltext-container"
 export function useFullTextContent(url: string) {
   const [content, setContent] = useState("")
 
-  const { enabled, config } = useSiteConfigWithPreview(url)
+  const { enabled, enabledDetails, config } = useSiteConfigWithPreview(url)
   const [fullTextContainer] = useFullTextContainer(config)
 
   useEffect(() => {
@@ -21,5 +21,5 @@ export function useFullTextContent(url: string) {
     })()
   }, [fullTextContainer, enabled, config])
 
-  return [enabled, content] as const
+  return { enabled, enabledDetails, content } as const
 }

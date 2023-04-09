@@ -53,7 +53,9 @@ const PanelOverlay = () => {
   const pageSummaryRef = useRef<SummaryContent>(null)
   const textSummaryRef = useRef<SummaryContent>(null)
 
-  const [, fullTextContent] = useFullTextContent(urlNormalize(location.href))
+  const { enabledDetails, content: fullTextContent } = useFullTextContent(
+    urlNormalize(location.href)
+  )
 
   const summaryContent = useMemo(() => {
     if (summarySource === "page") {
@@ -71,6 +73,13 @@ const PanelOverlay = () => {
       setPosition(await storage.get(ConfigKeys.panelPosition))
     })()
   }, [])
+
+  useEffect(() => {
+    chrome.runtime.sendMessage({
+      name: MessageNames.UpdateEnabled,
+      enabledDetails
+    })
+  }, [enabledDetails])
 
   useEffect(() => {
     pageContent.current = fullTextContent
