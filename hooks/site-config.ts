@@ -18,6 +18,7 @@ import { useDefaultSourceTextConfig } from "./default-source-text-config"
 export type EnabledType = {
   isManually: boolean
   isPage: boolean
+  forcePage: boolean
 }
 
 export type ConfigType = {
@@ -59,44 +60,94 @@ export function useSiteConfig(url?: string) {
       if (mode === Mode.Active) {
         let manuallyDisabled = false
         let isPage = false
+        let forceEnabled = false
         if (pages && pages[pageKey]) {
           if (pages[pageKey] === SiteStatus.Disabled) {
             manuallyDisabled = true
             isPage = true
+          } else if (pages[pageKey] === SiteStatus.ForceEnabled) {
+            forceEnabled = true
           }
         }
 
-        if (hosts && hosts[hostKey]) {
-          if (hosts[hostKey] === SiteStatus.Disabled) {
-            manuallyDisabled = true
-            isPage = false
-          }
+        if (hosts && hosts[hostKey] === SiteStatus.Disabled) {
+          manuallyDisabled = true
+          isPage = false
         }
-        setEnabledType({ isManually: manuallyDisabled, isPage })
-        setEnabled(!manuallyDisabled)
+
+        setEnabledType({
+          isManually: manuallyDisabled,
+          isPage,
+          forcePage: forceEnabled
+        })
+        setEnabled(forceEnabled || !manuallyDisabled)
       } else {
         let manuallyEnabled = false
         let isPage = false
+        let forceDisabled = false
         if (pages && pages[pageKey]) {
           if (pages[pageKey] === SiteStatus.Enabled) {
             manuallyEnabled = true
             isPage = true
+          } else if (pages[pageKey] === SiteStatus.ForceDisabled) {
+            forceDisabled = true
           }
         }
 
-        if (hosts && hosts[hostKey]) {
-          if (hosts[hostKey] === SiteStatus.Enabled) {
-            manuallyEnabled = true
-            isPage = false
-          }
+        if (hosts && hosts[hostKey] === SiteStatus.Enabled) {
+          manuallyEnabled = true
+          isPage = false
         }
-        setEnabledType({ isManually: manuallyEnabled, isPage })
-        setEnabled(manuallyEnabled)
+
+        setEnabledType({
+          isManually: manuallyEnabled,
+          isPage,
+          forcePage: forceDisabled
+        })
+        setEnabled(!forceDisabled && manuallyEnabled)
       }
     }
 
     updateEnabled()
   }, [mode, pages, hosts, pageKey, hostKey])
+
+  function toggleEnabled(isPage: boolean, isManually: boolean) {
+    if (isPage) {
+      let newPages = { ...pages }
+      if (isManually) {
+        newPages[pageKey] =
+          mode === Mode.Active ? SiteStatus.Disabled : SiteStatus.Enabled
+      } else {
+        newPages[pageKey] = SiteStatus.Default
+      }
+
+      setPages(newPages)
+    } else {
+      let newHosts = { ...hosts }
+      if (isManually) {
+        newHosts[hostKey] =
+          mode === Mode.Active ? SiteStatus.Disabled : SiteStatus.Enabled
+      } else {
+        newHosts[hostKey] = SiteStatus.Default
+      }
+
+      setHosts(newHosts)
+    }
+  }
+
+  function toggleForcePageEnabled(forced: boolean) {
+    let newPages = { ...pages }
+    if (forced) {
+      newPages[pageKey] =
+        mode === Mode.Active
+          ? SiteStatus.ForceEnabled
+          : SiteStatus.ForceDisabled
+    } else {
+      newPages[pageKey] = SiteStatus.Default
+    }
+
+    setPages(newPages)
+  }
 
   const [effectiveConfig, setEffectiveConfig] = useState<SourceTextConfig>()
   const [effectiveConfigType, setEffectiveConfigType] = useState<ConfigType>()
@@ -177,30 +228,6 @@ export function useSiteConfig(url?: string) {
     updateEffectiveConfig()
   }, [pageConfig, hostConfig, defaultConfig])
 
-  function toggleEnabled(isPage: boolean, isManually: boolean) {
-    if (isPage) {
-      let newPages = { ...pages }
-      if (isManually) {
-        newPages[pageKey] =
-          mode === Mode.Active ? SiteStatus.Disabled : SiteStatus.Enabled
-      } else {
-        newPages[pageKey] = SiteStatus.Default
-      }
-
-      setPages(newPages)
-    } else {
-      let newHosts = { ...hosts }
-      if (isManually) {
-        newHosts[hostKey] =
-          mode === Mode.Active ? SiteStatus.Disabled : SiteStatus.Enabled
-      } else {
-        newHosts[hostKey] = SiteStatus.Default
-      }
-
-      setHosts(newHosts)
-    }
-  }
-
   function saveConfig(dest: "host" | "page", newConfig: SourceTextConfig) {
     const storage = new Storage()
     if (dest === "page") {
@@ -227,6 +254,7 @@ export function useSiteConfig(url?: string) {
     effectiveConfig,
     effectiveConfigType,
     toggleEnabled,
+    toggleForcePageEnabled,
     saveConfig,
     restoreConfig
   } as const

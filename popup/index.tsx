@@ -36,6 +36,7 @@ function IndexPopup() {
     effectiveConfig,
     effectiveConfigType,
     toggleEnabled,
+    toggleForcePageEnabled,
     saveConfig,
     restoreConfig
   } = useSiteConfig(url)
@@ -52,6 +53,10 @@ function IndexPopup() {
 
   async function onUpdateState(newState: StatusSwitchState) {
     toggleEnabled(newState.secondary, newState.checked)
+  }
+
+  async function onForcePageChange(checked: boolean) {
+    toggleForcePageEnabled(checked)
   }
 
   function onSummarizePage() {
@@ -88,6 +93,8 @@ function IndexPopup() {
                     action={`${mode == Mode.Active ? "Disable" : "Enable"}`}
                     state={statusSwitchState}
                     onChange={onUpdateState}
+                    forcePageChecked={enabledType?.forcePage}
+                    onForcePageChange={onForcePageChange}
                   />
                 </div>
                 {enabled ? (

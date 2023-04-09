@@ -1,15 +1,16 @@
 import { Storage } from "@plasmohq/storage"
 import { useCallback, useEffect, useState } from "react"
 import { ShortcutNames, isFirstCacheKey } from "~constants"
+import { useShortcuts } from "~hooks/shortcuts"
 
 const ShortcutsDisplayName = {
-  [ShortcutNames.ToggleEnable]: "Toggle enable/disable",
+  [ShortcutNames.ToggleEnablePage]: "Toggle enable/disable page",
+  [ShortcutNames.ToggleEnableHost]: "Toggle enable/disable domain",
   [ShortcutNames.SummarizePage]: "Summarize current page"
 }
 
 export default function ShortcutsTable() {
   const [isFirstTime, setIsFirstTime] = useState(false)
-  const [shortcuts, setShortcuts] = useState([])
 
   useEffect(() => {
     ;(async () => {
@@ -19,10 +20,9 @@ export default function ShortcutsTable() {
         storage.remove(isFirstCacheKey)
       }
     })()
-    chrome.commands.getAll((commands) => {
-      setShortcuts(commands)
-    })
   }, [])
+
+  const [shortcuts] = useShortcuts()
 
   const openShortcutPage = useCallback(() => {
     chrome.tabs.update({ url: "chrome://extensions/shortcuts" })

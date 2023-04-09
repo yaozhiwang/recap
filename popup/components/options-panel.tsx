@@ -35,13 +35,20 @@ export default function OptionsPanel(props: {
     }
   }, [config])
 
+  function hostTypeName(type: ConfigType["type"] | ConfigType["parentType"]) {
+    if (type === "Host") {
+      return "Domain"
+    }
+    return type
+  }
+
   return (
     <>
       {srcTxtConfig !== undefined ? (
         <div className="mt-2 flex flex-col gap-2 border border-neutral-200 p-2 dark:border-neutral-500">
           <p className="text-sm font-semibold">
             Config from{" "}
-            <span className="font-bold">{` ${configType.type}`}</span>
+            <span className="font-bold">{hostTypeName(configType.type)}</span>
           </p>
           <div className="flex flex-col gap-0.5">
             <div>
@@ -127,7 +134,9 @@ export default function OptionsPanel(props: {
                   </button>
                   <p className="mt-1 text-xs text-neutral-500">
                     Restore from{" "}
-                    <span className="font-semibold">{` ${configType.parentType} `}</span>{" "}
+                    <span className="font-semibold">
+                      {hostTypeName(configType.parentType)}
+                    </span>{" "}
                     config
                   </p>
                 </>

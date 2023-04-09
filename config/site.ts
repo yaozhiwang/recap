@@ -5,7 +5,9 @@ import { ConfigKeys, Mode } from "~config"
 export enum SiteStatus {
   Default = "default",
   Enabled = "enabled",
-  Disabled = "disabled"
+  Disabled = "disabled",
+  ForceEnabled = "force-enabled",
+  ForceDisabled = "force-disabled"
 }
 export const HostListConfigKey = "hosts"
 export const PageListConfigKey = "pages"
@@ -70,7 +72,7 @@ export async function saveDefaultSiteConfigs() {
   await storage.set(HostListConfigKey, hosts)
 }
 
-export async function toggleEnable(url: string) {
+export async function toggleEnablePage(url: string) {
   const storage = new Storage()
 
   const mode = await storage.get(ConfigKeys.mode)
@@ -79,11 +81,46 @@ export async function toggleEnable(url: string) {
     pages = {}
   }
   const pageKey = getPageItemKey(url, false)
-  if (pages[pageKey] === undefined || pages[pageKey] === SiteStatus.Default) {
-    pages[pageKey] =
-      mode === Mode.Active ? SiteStatus.Disabled : SiteStatus.Enabled
+
+  let hosts = await storage.get<{}>(HostListConfigKey)
+  if (hosts === undefined) {
+    hosts = {}
+  }
+  const hostKey = getHostItemKey(url, false)
+  if (hosts[hostKey] === undefined || hosts[hostKey] === SiteStatus.Default) {
+    if (pages[pageKey] === undefined || pages[pageKey] === SiteStatus.Default) {
+      pages[pageKey] =
+        mode === Mode.Active ? SiteStatus.Disabled : SiteStatus.Enabled
+    } else {
+      pages[pageKey] = SiteStatus.Default
+    }
   } else {
-    pages[pageKey] = SiteStatus.Default
+    if (pages[pageKey] === undefined || pages[pageKey] === SiteStatus.Default) {
+      pages[pageKey] =
+        mode === Mode.Active
+          ? SiteStatus.ForceEnabled
+          : SiteStatus.ForceDisabled
+    } else {
+      pages[pageKey] = SiteStatus.Default
+    }
   }
   await storage.set(PageListConfigKey, pages)
+}
+
+export async function toggleEnableHost(url: string) {
+  const storage = new Storage()
+
+  const mode = await storage.get(ConfigKeys.mode)
+  let hosts = await storage.get<{}>(HostListConfigKey)
+  if (hosts === undefined) {
+    hosts = {}
+  }
+  const hostKey = getHostItemKey(url, false)
+  if (hosts[hostKey] === undefined || hosts[hostKey] === SiteStatus.Default) {
+    hosts[hostKey] =
+      mode === Mode.Active ? SiteStatus.Disabled : SiteStatus.Enabled
+  } else {
+    hosts[hostKey] = SiteStatus.Default
+  }
+  await storage.set(HostListConfigKey, hosts)
 }

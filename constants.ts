@@ -11,7 +11,8 @@ export enum PortNames {
 export const PreviewConfigKey: string = "preview.config"
 
 export enum ShortcutNames {
-  ToggleEnable = "toggle-enable",
+  ToggleEnablePage = "toggle-enable-page",
+  ToggleEnableHost = "toggle-enable-host",
   SummarizePage = "summarize-page"
 }
 

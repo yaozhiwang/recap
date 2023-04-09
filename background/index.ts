@@ -1,5 +1,10 @@
 import { Storage } from "@plasmohq/storage"
-import { ConfigKeys, saveDefaultConfigs, toggleEnable } from "~/config"
+import {
+  ConfigKeys,
+  saveDefaultConfigs,
+  toggleEnablePage,
+  toggleEnableHost
+} from "~/config"
 
 import {
   ChatGPTWebAppProviderConfig,
@@ -92,8 +97,10 @@ chrome.commands.onCommand.addListener((command) => {
     if (!tab.url.startsWith("http://") && !tab.url.startsWith("https://")) {
       return
     }
-    if (command === ShortcutNames.ToggleEnable) {
-      toggleEnable(tab.url)
+    if (command === ShortcutNames.ToggleEnablePage) {
+      toggleEnablePage(tab.url)
+    } else if (command === ShortcutNames.ToggleEnableHost) {
+      toggleEnableHost(tab.url)
     } else if (command === ShortcutNames.SummarizePage) {
       chrome.tabs.sendMessage(tab.id, { name: MessageNames.SummarizePage })
     }

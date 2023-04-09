@@ -62,17 +62,24 @@
       }
     ],
     "commands": {
-      "toggle-enable": {
+      "toggle-enable-page": {
         "suggested_key": {
           "default": "Ctrl+U",
           "mac": "Command+U"
         },
         "description": "Toggle enable/disable for current page."
       },
-      "summarize-page": {
+      "toggle-enable-host": {
         "suggested_key": {
           "default": "Ctrl+I",
           "mac": "Command+I"
+        },
+        "description": "Toggle enable/disable for current domain."
+      },
+      "summarize-page": {
+        "suggested_key": {
+          "default": "Ctrl+K",
+          "mac": "Command+K"
         },
         "description": "Summarize the content on current page."
       }
