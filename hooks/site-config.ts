@@ -126,17 +126,25 @@ export function useSiteConfig(url?: string) {
       let hostEnabled = false
       if (hosts === undefined || hosts[hostKey] === undefined) {
         hostEnabled = mode === Mode.Active
-        if (pages === undefined || pages[pageKey] === undefined) {
-          pageEnabled = mode === Mode.Active
-        } else {
+        if (
+          pages &&
+          (pages[pageKey] === SiteStatus.Enabled ||
+            pages[pageKey] === SiteStatus.Disabled)
+        ) {
+          // manually set page
           pageEnabled = pages[pageKey] === SiteStatus.Enabled
+        } else {
+          pageEnabled = hostEnabled
         }
       } else {
         hostEnabled = hosts[hostKey] === SiteStatus.Enabled
-        if (pages && pages[pageKey] === SiteStatus.ForceEnabled) {
-          pageEnabled = true
-        } else if (pages && pages[pageKey] === SiteStatus.ForceDisabled) {
-          pageEnabled = false
+        if (
+          pages &&
+          (pages[pageKey] === SiteStatus.ForceEnabled ||
+            pages[pageKey] === SiteStatus.ForceDisabled)
+        ) {
+          // force page
+          pageEnabled = pages[pageKey] === SiteStatus.ForceEnabled
         } else {
           pageEnabled = hostEnabled
         }
