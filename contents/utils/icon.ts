@@ -19,9 +19,13 @@ export function getIconData(enabledDetails: EnabledDetails, iconSize = 32) {
     svg?.setAttribute("width", iconSize.toString())
     svg?.setAttribute("height", iconSize.toString())
 
+    const ring = doc.querySelector("#bg-ring")
+    ring?.setAttribute("stroke", "#fff")
+    ring?.setAttribute("stroke-width", "2")
     doc
       .querySelector("#g-fg")
       ?.setAttribute("transform", "matrix(.8 0 0 .8 12.8 12.8)")
+
     doc
       .querySelector("#bg-ring")
       ?.setAttribute("fill", pageEnabled ? enabledColor : disabledColor)
