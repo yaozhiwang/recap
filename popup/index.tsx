@@ -32,7 +32,7 @@ function IndexPopup() {
   const {
     mode,
     enabled,
-    enabledType,
+    enabledReason,
     effectiveConfig,
     effectiveConfigType,
     toggleEnabled,
@@ -42,14 +42,14 @@ function IndexPopup() {
   } = useSiteConfig(url)
 
   useEffect(() => {
-    if (enabledType === undefined) {
+    if (enabledReason === undefined) {
       return
     }
     setStatusSwitchState({
-      secondary: enabledType.isPage,
-      checked: enabledType.isManually
+      secondary: enabledReason.isPage,
+      checked: enabledReason.isManually
     })
-  }, [enabledType])
+  }, [enabledReason])
 
   async function onUpdateState(newState: StatusSwitchState) {
     toggleEnabled(newState.secondary, newState.checked)
@@ -93,7 +93,7 @@ function IndexPopup() {
                     action={`${mode == Mode.Active ? "Disable" : "Enable"}`}
                     state={statusSwitchState}
                     onChange={onUpdateState}
-                    forcePageChecked={enabledType?.forcePage}
+                    forcePageChecked={enabledReason?.forcePage}
                     onForcePageChange={onForcePageChange}
                   />
                 </div>

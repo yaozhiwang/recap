@@ -15,7 +15,7 @@ import {
 } from "~config"
 import { useDefaultSourceTextConfig } from "./default-source-text-config"
 
-export type EnabledType = {
+export type EnabledReason = {
   isManually: boolean
   isPage: boolean
   forcePage: boolean
@@ -33,7 +33,7 @@ export type ConfigType = {
 
 export function useSiteConfig(url?: string) {
   const [enabled, setEnabled] = useState<boolean>()
-  const [enabledType, setEnabledType] = useState<EnabledType>()
+  const [enabledReason, setEnabledReason] = useState<EnabledReason>()
   const [enabledDetails, setEnabledDetails] = useState<EnabledDetails>()
 
   const [mode] = useStorage(ConfigKeys.mode)
@@ -81,7 +81,7 @@ export function useSiteConfig(url?: string) {
           isPage = false
         }
 
-        setEnabledType({
+        setEnabledReason({
           isManually: manuallyDisabled,
           isPage,
           forcePage: forceEnabled
@@ -105,7 +105,7 @@ export function useSiteConfig(url?: string) {
           isPage = false
         }
 
-        setEnabledType({
+        setEnabledReason({
           isManually: manuallyEnabled,
           isPage,
           forcePage: forceDisabled
@@ -295,7 +295,7 @@ export function useSiteConfig(url?: string) {
   return {
     mode,
     enabled,
-    enabledType,
+    enabledReason,
     enabledDetails,
     effectiveConfig,
     effectiveConfigType,
