@@ -2,7 +2,7 @@ import colors from "tailwindcss/colors"
 import iconFile from "url:~/assets/icon.svg"
 import type { EnabledDetails } from "~hooks"
 
-const enabledColor = colors.green[500]
+const enabledColor = colors.emerald[500]
 const disabledColor = colors.orange[500]
 
 export function getIconData(enabledDetails: EnabledDetails, iconSize = 32) {

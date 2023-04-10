@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg id="recap-icon" width="128" height="128" version="1.1" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
- <rect id="bg-rect" width="128" height="128" ry="24" fill="#22c55e"/>
- <circle id="bg-ring" cx="64" cy="64" r="60" fill="#f97316"/>
+ <rect id="bg-rect" width="128" height="128" ry="24" fill="#10b981"/>
+ <circle id="bg-ring" cx="64" cy="64" r="60" fill="#fb923c"/>
  <g id="g-fg">
   <circle id="bg-circle" cx="64" cy="64" r="50" fill="#fff"/>
   <g id="g-bottom" fill="#a855f7">
