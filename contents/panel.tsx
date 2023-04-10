@@ -4,6 +4,7 @@ import type { PlasmoCSConfig, PlasmoGetOverlayAnchor } from "plasmo"
 import { useEffect, useMemo, useRef, useState } from "react"
 import logo from "url:~assets/icon.png"
 import { ResultTextArea } from "~components/contents"
+import ProviderInfo from "~components/provider-info"
 import { ConfigKeys, PanelPosition, Theme, urlNormalize } from "~config"
 import { MessageNames } from "~constants"
 import { useTheme } from "~hooks"
@@ -20,12 +21,12 @@ import {
 import { classNames } from "~utils"
 import { useFullTextContent } from "./hooks/fulltext-content"
 import {
-  isRunningStatus,
   SummaryContent,
   SummaryStatus,
+  isRunningStatus,
   useSummaryContent
 } from "./hooks/summary-content"
-import ProviderInfo from "~components/provider-info"
+import { getIconData } from "./utils/icon"
 
 export const config: PlasmoCSConfig = {
   matches: ["http://*/*", "https://*/*"]
@@ -75,9 +76,18 @@ const PanelOverlay = () => {
   }, [])
 
   useEffect(() => {
-    chrome.runtime.sendMessage({
-      name: MessageNames.UpdateEnabled,
-      enabledDetails
+    if (enabledDetails === undefined) {
+      return
+    }
+
+    const iconSize = 32
+    getIconData(enabledDetails, iconSize).then((imageDataBuffer) => {
+      chrome.runtime.sendMessage({
+        name: MessageNames.UpdateEnabled,
+        enabledDetails,
+        imageDataBuffer,
+        iconSize
+      })
     })
   }, [enabledDetails])
 
