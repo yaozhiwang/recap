@@ -3,7 +3,6 @@ import normalizeUrl from "normalize-url"
 import { ConfigKeys, Mode } from "~config"
 
 export enum SiteStatus {
-  Default = "default",
   Enabled = "enabled",
   Disabled = "disabled",
   ForceEnabled = "force-enabled",
@@ -87,21 +86,21 @@ export async function toggleEnablePage(url: string) {
     hosts = {}
   }
   const hostKey = getHostItemKey(url, false)
-  if (hosts[hostKey] === undefined || hosts[hostKey] === SiteStatus.Default) {
-    if (pages[pageKey] === undefined || pages[pageKey] === SiteStatus.Default) {
+  if (hosts[hostKey] === undefined) {
+    if (pages[pageKey] === undefined) {
       pages[pageKey] =
         mode === Mode.Active ? SiteStatus.Disabled : SiteStatus.Enabled
     } else {
-      pages[pageKey] = SiteStatus.Default
+      delete pages[pageKey]
     }
   } else {
-    if (pages[pageKey] === undefined || pages[pageKey] === SiteStatus.Default) {
+    if (pages[pageKey] === undefined) {
       pages[pageKey] =
         mode === Mode.Active
           ? SiteStatus.ForceEnabled
           : SiteStatus.ForceDisabled
     } else {
-      pages[pageKey] = SiteStatus.Default
+      delete pages[pageKey]
     }
   }
   await storage.set(PageListConfigKey, pages)
@@ -116,11 +115,11 @@ export async function toggleEnableHost(url: string) {
     hosts = {}
   }
   const hostKey = getHostItemKey(url, false)
-  if (hosts[hostKey] === undefined || hosts[hostKey] === SiteStatus.Default) {
+  if (hosts[hostKey] === undefined) {
     hosts[hostKey] =
       mode === Mode.Active ? SiteStatus.Disabled : SiteStatus.Enabled
   } else {
-    hosts[hostKey] = SiteStatus.Default
+    delete hosts[hostKey]
   }
   await storage.set(HostListConfigKey, hosts)
 }

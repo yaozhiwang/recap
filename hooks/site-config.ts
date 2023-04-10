@@ -124,17 +124,9 @@ export function useSiteConfig(url?: string) {
       }
       let pageEnabled = false
       let hostEnabled = false
-      if (
-        hosts === undefined ||
-        hosts[hostKey] === undefined ||
-        hosts[hostKey] === SiteStatus.Default
-      ) {
+      if (hosts === undefined || hosts[hostKey] === undefined) {
         hostEnabled = mode === Mode.Active
-        if (
-          pages === undefined ||
-          pages[pageKey] === undefined ||
-          pages[pageKey] === SiteStatus.Default
-        ) {
+        if (pages === undefined || pages[pageKey] === undefined) {
           pageEnabled = mode === Mode.Active
         } else {
           pageEnabled = pages[pageKey] === SiteStatus.Enabled
@@ -163,7 +155,7 @@ export function useSiteConfig(url?: string) {
         newPages[pageKey] =
           mode === Mode.Active ? SiteStatus.Disabled : SiteStatus.Enabled
       } else {
-        newPages[pageKey] = SiteStatus.Default
+        delete newPages[pageKey]
       }
 
       setPages(newPages)
@@ -173,7 +165,7 @@ export function useSiteConfig(url?: string) {
         newHosts[hostKey] =
           mode === Mode.Active ? SiteStatus.Disabled : SiteStatus.Enabled
       } else {
-        newHosts[hostKey] = SiteStatus.Default
+        delete newHosts[hostKey]
       }
 
       setHosts(newHosts)
@@ -188,7 +180,7 @@ export function useSiteConfig(url?: string) {
           ? SiteStatus.ForceEnabled
           : SiteStatus.ForceDisabled
     } else {
-      newPages[pageKey] = SiteStatus.Default
+      delete newPages[pageKey]
     }
 
     setPages(newPages)
