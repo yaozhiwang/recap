@@ -1,6 +1,5 @@
 import { range } from "lodash-es"
 import { useEffect, useMemo, useState } from "react"
-import { getExcludes } from "~config"
 import { useSiteConfigWithPreview } from "~hooks"
 import { getInnerText } from "~utils/dom"
 import { useFullTextContainer } from "./fulltext-container"
@@ -30,7 +29,7 @@ export function usePassageContent(url: string, anchor: Element) {
         shouldShow = headingLevel <= configHeadingLevel
       }
 
-      const excludes = getExcludes(config.excludeContainers)
+      const excludes = config.excludeContainers
 
       if (shouldShow && excludes.length > 0) {
         let e = anchor
@@ -87,19 +86,18 @@ async function getPassageText(
   fullTextContainer: string,
   excludes?: string[]
 ) {
-  let selector = await getHigherLevelSelector(fullTextContainer, node.tagName)
+  let selector = getHigherLevelSelector(fullTextContainer, node.tagName)
 
-  let text = ""
   let n: Node = node
+  const newElem = document.createElement("div")
 
   do {
-    if (n instanceof Element) {
-      text += getInnerText(n, excludes)
-    } else if (n.nodeType === Node.TEXT_NODE) {
-      n.textContent && (text += n.textContent + "\n")
-    }
+    newElem.appendChild(n.cloneNode(true))
     n = n.nextSibling || null
   } while (n && !(n instanceof Element && n.matches(selector)))
+
+  const text = getInnerText(newElem, true, excludes)
+  newElem.remove()
 
   return text
 }
@@ -125,7 +123,7 @@ async function getPreviousText(
     return ""
   }
 
-  let txt = ""
+  const newElem = document.createElement("div")
   for (let i = nodes.length - 2; i >= 0; i--) {
     const parent = nodes[i + 1]
     const child = nodes[i]
@@ -134,15 +132,14 @@ async function getPreviousText(
       if (ch === child) {
         break
       }
-      if (ch instanceof Element) {
-        txt += getInnerText(ch, excludes)
-      } else if (ch.nodeType === Node.TEXT_NODE) {
-        ch.textContent && (txt += ch.textContent + "\n")
-      }
+      newElem.appendChild(ch.cloneNode(true))
     }
   }
 
-  return txt
+  const text = getInnerText(newElem, true, excludes)
+  newElem.remove()
+
+  return text
 }
 
 function getHigherLevelSelector(container: string, tag: string) {

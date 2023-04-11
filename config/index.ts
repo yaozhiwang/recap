@@ -62,14 +62,6 @@ const defaultConfigs = {
   [ConfigKeys.prompt]: "Summarize this text:"
 }
 
-const ExtraExcludeContainer = ["script"]
-
-export function getExcludes(excludes?: string[]) {
-  return excludes
-    ? excludes.concat(ExtraExcludeContainer)
-    : ExtraExcludeContainer
-}
-
 export * from "./site"
 export * from "./provider"
 

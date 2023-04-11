@@ -14,7 +14,7 @@ export function useFullTextContent(url: string) {
       if (enabled && config && fullTextContainer) {
         let content = ""
         for (const node of document.querySelectorAll(fullTextContainer)) {
-          content += getInnerText(node, config.excludeContainers)
+          content += getInnerText(node, false, config.excludeContainers)
         }
         setContent(content)
       }
