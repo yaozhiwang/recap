@@ -11,13 +11,18 @@ export function useFullTextContent(url: string) {
 
   useEffect(() => {
     ;(async () => {
-      if (enabled && config && fullTextContainer) {
-        let content = ""
-        for (const node of document.querySelectorAll(fullTextContainer)) {
-          content += getInnerText(node, false, config.excludeContainers)
-        }
-        setContent(content)
+      if (
+        enabled === undefined ||
+        config === undefined ||
+        fullTextContainer === undefined
+      ) {
+        return
       }
+      let content = ""
+      for (const node of document.querySelectorAll(fullTextContainer)) {
+        content += getInnerText(node, false, config.excludeContainers)
+      }
+      setContent(content)
     })()
   }, [fullTextContainer, enabled, config])
 

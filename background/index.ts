@@ -24,6 +24,10 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   }
 })
 
+chrome.runtime.onStartup.addListener(async () => {
+  await saveDefaultConfigs()
+})
+
 chrome.runtime.onInstalled.addListener(async () => {
   chrome.contextMenus.create({
     id: "recap-sum",

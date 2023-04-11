@@ -60,23 +60,27 @@ export function useSiteConfig(url?: string) {
 
   useEffect(() => {
     function updateEnabled() {
-      if (pageKey === undefined || hostKey === undefined) {
+      if (
+        mode === undefined ||
+        pages === undefined ||
+        hosts === undefined ||
+        pageKey === undefined ||
+        hostKey === undefined
+      ) {
         return
       }
       if (mode === Mode.Active) {
         let manuallyDisabled = false
         let isPage = false
         let forceEnabled = false
-        if (pages && pages[pageKey]) {
-          if (pages[pageKey] === SiteStatus.Disabled) {
-            manuallyDisabled = true
-            isPage = true
-          } else if (pages[pageKey] === SiteStatus.ForceEnabled) {
-            forceEnabled = true
-          }
+        if (pages[pageKey] === SiteStatus.Disabled) {
+          manuallyDisabled = true
+          isPage = true
+        } else if (pages[pageKey] === SiteStatus.ForceEnabled) {
+          forceEnabled = true
         }
 
-        if (hosts && hosts[hostKey] === SiteStatus.Disabled) {
+        if (hosts[hostKey] === SiteStatus.Disabled) {
           manuallyDisabled = true
           isPage = false
         }
@@ -91,16 +95,14 @@ export function useSiteConfig(url?: string) {
         let manuallyEnabled = false
         let isPage = false
         let forceDisabled = false
-        if (pages && pages[pageKey]) {
-          if (pages[pageKey] === SiteStatus.Enabled) {
-            manuallyEnabled = true
-            isPage = true
-          } else if (pages[pageKey] === SiteStatus.ForceDisabled) {
-            forceDisabled = true
-          }
+        if (pages[pageKey] === SiteStatus.Enabled) {
+          manuallyEnabled = true
+          isPage = true
+        } else if (pages[pageKey] === SiteStatus.ForceDisabled) {
+          forceDisabled = true
         }
 
-        if (hosts && hosts[hostKey] === SiteStatus.Enabled) {
+        if (hosts[hostKey] === SiteStatus.Enabled) {
           manuallyEnabled = true
           isPage = false
         }
@@ -119,17 +121,22 @@ export function useSiteConfig(url?: string) {
 
   useEffect(() => {
     function updateEnabledDetails() {
-      if (pageKey === undefined || hostKey === undefined) {
+      if (
+        mode === undefined ||
+        pages === undefined ||
+        hosts === undefined ||
+        pageKey === undefined ||
+        hostKey === undefined
+      ) {
         return
       }
       let pageEnabled = false
       let hostEnabled = false
-      if (hosts === undefined || hosts[hostKey] === undefined) {
+      if (hosts[hostKey] === undefined) {
         hostEnabled = mode === Mode.Active
         if (
-          pages &&
-          (pages[pageKey] === SiteStatus.Enabled ||
-            pages[pageKey] === SiteStatus.Disabled)
+          pages[pageKey] === SiteStatus.Enabled ||
+          pages[pageKey] === SiteStatus.Disabled
         ) {
           // manually set page
           pageEnabled = pages[pageKey] === SiteStatus.Enabled
@@ -139,9 +146,8 @@ export function useSiteConfig(url?: string) {
       } else {
         hostEnabled = hosts[hostKey] === SiteStatus.Enabled
         if (
-          pages &&
-          (pages[pageKey] === SiteStatus.ForceEnabled ||
-            pages[pageKey] === SiteStatus.ForceDisabled)
+          pages[pageKey] === SiteStatus.ForceEnabled ||
+          pages[pageKey] === SiteStatus.ForceDisabled
         ) {
           // force page
           pageEnabled = pages[pageKey] === SiteStatus.ForceEnabled

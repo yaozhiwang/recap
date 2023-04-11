@@ -48,27 +48,14 @@ function getHost(url: string) {
   return url.split("/")[0]
 }
 
-const defaultDisabledSites = [
-  "google.com",
-  "github.com",
-  "bing.com",
-  "chat.openai.com"
-]
-
 export async function saveDefaultSiteConfigs() {
   const storage = new Storage()
 
-  let hosts = await storage.get<{ [k: string]: SiteStatus }>(HostListConfigKey)
-  if (hosts === undefined) {
-    hosts = {}
-  }
-  defaultDisabledSites.forEach((site) => {
-    const key = getHostItemKey(site, false)
-    if (hosts[key] === undefined) {
-      hosts[key] = SiteStatus.Disabled
+  for (const key of [HostListConfigKey, PageListConfigKey]) {
+    if (undefined === (await storage.get(key))) {
+      await storage.set(key, { dummy: SiteStatus.Enabled })
     }
-  })
-  await storage.set(HostListConfigKey, hosts)
+  }
 }
 
 export async function toggleEnablePage(url: string) {
@@ -76,15 +63,9 @@ export async function toggleEnablePage(url: string) {
 
   const mode = await storage.get(ConfigKeys.mode)
   let pages = await storage.get<{}>(PageListConfigKey)
-  if (pages === undefined) {
-    pages = {}
-  }
   const pageKey = getPageItemKey(url, false)
 
-  let hosts = await storage.get<{}>(HostListConfigKey)
-  if (hosts === undefined) {
-    hosts = {}
-  }
+  const hosts = await storage.get<{}>(HostListConfigKey)
   const hostKey = getHostItemKey(url, false)
   if (hosts[hostKey] === undefined) {
     if (pages[pageKey] === undefined) {
@@ -110,10 +91,7 @@ export async function toggleEnableHost(url: string) {
   const storage = new Storage()
 
   const mode = await storage.get(ConfigKeys.mode)
-  let hosts = await storage.get<{}>(HostListConfigKey)
-  if (hosts === undefined) {
-    hosts = {}
-  }
+  const hosts = await storage.get<{}>(HostListConfigKey)
   const hostKey = getHostItemKey(url, false)
   if (hosts[hostKey] === undefined) {
     hosts[hostKey] =
