@@ -1,5 +1,4 @@
 import colors from "tailwindcss/colors"
-import iconFile from "url:~/assets/icon.svg"
 import type { EnabledDetails } from "~hooks"
 import { grayscaleImage } from "~utils/action-icon/utils"
 
@@ -60,12 +59,9 @@ function getIconData(
   transform?: (svg: SVGSVGElement) => boolean
 ) {
   return new Promise<ImageData>(async (resolve, reject) => {
-    const resp = await fetch(iconFile)
-    const doc = new window.DOMParser().parseFromString(
-      await resp.text(),
-      "text/xml"
-    )
-
+    const resp = await fetch(chrome.runtime.getURL("assets/icon.svg"))
+    const xml = await resp.text()
+    const doc = new window.DOMParser().parseFromString(xml, "image/svg+xml")
     const svg = doc.querySelector("svg")
     if (svg === undefined) {
       throw TypeError("input is not a SVG xml")

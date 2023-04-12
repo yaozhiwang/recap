@@ -2,7 +2,6 @@ import { Storage } from "@plasmohq/storage"
 import baseCssText from "data-text:~/style.css"
 import type { PlasmoCSConfig, PlasmoGetOverlayAnchor } from "plasmo"
 import { useEffect, useMemo, useRef, useState } from "react"
-import logo from "url:~assets/icon.svg"
 import { ResultTextArea } from "~components/contents"
 import ProviderInfo from "~components/provider-info"
 import { ConfigKeys, PanelPosition, Theme, urlNormalize } from "~config"
@@ -177,7 +176,7 @@ const PanelOverlay = () => {
               </button>
               <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-row items-center gap-1">
                 <img
-                  src={logo}
+                  src={chrome.runtime.getURL("assets/icon.svg")}
                   className="h-6 w-6 rounded-lg object-scale-down"
                 />
                 <span className="font-[cursive]">Recap</span>

@@ -59,6 +59,15 @@
         "resources": [
           "options.html"
         ]
+      },
+      {
+        "resources": [
+          "~assets/icon.svg"
+        ],
+        "matches": [
+          "http://*/*",
+          "https://*/*"
+        ]
       }
     ],
     "commands": {
