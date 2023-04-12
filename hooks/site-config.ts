@@ -11,7 +11,7 @@ import {
   Mode,
   PageListConfigKey,
   SiteStatus,
-  SourceTextConfig
+  type SourceTextConfig
 } from "~config"
 import { useDefaultSourceTextConfig } from "./default-source-text-config"
 

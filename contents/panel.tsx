@@ -26,7 +26,6 @@ import {
   isRunningStatus,
   useSummaryContent
 } from "./hooks/summary-content"
-import { getIconData } from "./utils/icon"
 
 export const config: PlasmoCSConfig = {
   matches: ["http://*/*", "https://*/*"]
@@ -80,14 +79,9 @@ const PanelOverlay = () => {
       return
     }
 
-    const iconSize = 32
-    getIconData(enabledDetails, iconSize).then((imageDataBuffer) => {
-      chrome.runtime.sendMessage({
-        name: MessageNames.UpdateEnabled,
-        enabledDetails,
-        imageDataBuffer,
-        iconSize
-      })
+    chrome.runtime.sendMessage({
+      name: MessageNames.UpdateActionIcon,
+      enabledDetails
     })
   }, [enabledDetails])
 

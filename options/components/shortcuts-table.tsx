@@ -14,7 +14,7 @@ export default function ShortcutsTable() {
 
   useEffect(() => {
     ;(async () => {
-      const storage = new Storage()
+      const storage = new Storage({ area: "local" })
       if (await storage.get(isFirstCacheKey)) {
         setIsFirstTime(true)
         storage.remove(isFirstCacheKey)

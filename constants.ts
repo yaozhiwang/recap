@@ -2,7 +2,7 @@ export enum MessageNames {
   SummarizeText = "summarize-text",
   SummarizePage = "summarize-page",
   TogglePanel = "toggle-panel",
-  UpdateEnabled = "update-enabled"
+  UpdateActionIcon = "update-action-icon"
 }
 
 export enum PortNames {

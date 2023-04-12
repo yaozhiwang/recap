@@ -15,6 +15,7 @@ import {
   ShortcutsTable
 } from "./components"
 import "./options.css"
+import { generateActionIconsIfAbesent } from "~utils/action-icon"
 
 function IndexOptions() {
   const [theme, configTheme, setTheme] = useTheme()
@@ -45,6 +46,10 @@ function IndexOptions() {
           .scrollIntoView({ behavior: "smooth", block: "start" })
       }, 300)
     }
+  }, [])
+
+  useEffect(() => {
+    generateActionIconsIfAbesent()
   }, [])
 
   const onThemeChange = (e: React.ChangeEvent<HTMLInputElement>) => {

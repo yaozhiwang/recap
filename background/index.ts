@@ -4,13 +4,13 @@ import {
   toggleEnableHost,
   toggleEnablePage
 } from "~/config"
-
 import {
-  isFirstCacheKey,
   MessageNames,
   PortNames,
-  ShortcutNames
+  ShortcutNames,
+  isFirstCacheKey
 } from "~constants"
+import { getLoadingActionIcon, getStatusActionIcon } from "./action-icon"
 import { summarize } from "./summarize"
 
 export {}
@@ -19,7 +19,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   await saveDefaultConfigs()
 
   if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
-    await new Storage().set(isFirstCacheKey, true)
+    await new Storage({ area: "local" }).set(isFirstCacheKey, true)
     chrome.runtime.openOptionsPage()
   }
 })
@@ -43,6 +43,15 @@ chrome.contextMenus.onClicked.addListener((item, tab) => {
     name: MessageNames.SummarizeText,
     text: item.selectionText
   })
+})
+
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo) => {
+  if (changeInfo.status === "loading") {
+    const imageData = await getLoadingActionIcon()
+    if (imageData) {
+      chrome.action.setIcon({ tabId, imageData })
+    }
+  }
 })
 
 chrome.commands.onCommand.addListener((command) => {
@@ -94,7 +103,7 @@ chrome.runtime.onConnect.addListener((port) => {
 })
 
 chrome.runtime.onMessage.addListener(async function (msg, sender) {
-  if (msg.name == MessageNames.UpdateEnabled) {
+  if (msg.name == MessageNames.UpdateActionIcon) {
     const { pageEnabled, hostEnabled } = msg.enabledDetails
 
     chrome.action.setTitle({
@@ -104,10 +113,9 @@ chrome.runtime.onMessage.addListener(async function (msg, sender) {
       }\n`
     })
 
-    const canvas = new OffscreenCanvas(msg.iconSize, msg.iconSize)
-    const context = canvas.getContext("2d")
-    let imageData = context.createImageData(msg.iconSize, msg.iconSize)
-    imageData.data.set(Buffer.from(msg.imageDataBuffer, "base64"))
-    chrome.action.setIcon({ tabId: sender.tab.id, imageData })
+    const imageData = await getStatusActionIcon(pageEnabled, hostEnabled)
+    if (imageData) {
+      chrome.action.setIcon({ tabId: sender.tab.id, imageData })
+    }
   }
 })
