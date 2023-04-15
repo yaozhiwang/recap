@@ -2,6 +2,8 @@
 
 A browser extension to summarize text on webpage splitting by passages with ChatGPT
 
+[Install from Chrome Web Store](https://chrome.google.com/webstore/detail/recap-smart-split-and-sum/fegolfhddfkibejadoipedlgcapbncml)
+
 ## Features
 
 - Recap previous content for a specified passage
