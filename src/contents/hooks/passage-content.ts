@@ -48,7 +48,7 @@ export function usePassageContent(url: string, anchor: Element) {
 
   useEffect(() => {
     ;(async () => {
-      if (fullTextContainer && config) {
+      if (enabled && fullTextContainer && config) {
         setText(
           await getPassageText(
             anchor,
@@ -65,7 +65,7 @@ export function usePassageContent(url: string, anchor: Element) {
         )
       }
     })()
-  }, [fullTextContainer, config])
+  }, [enabled, fullTextContainer, config])
 
   return {
     show,

@@ -18,6 +18,9 @@ export function useFullTextContent(url: string) {
       ) {
         return
       }
+      if (!enabled) {
+        return
+      }
       let content = ""
       for (const node of document.querySelectorAll(fullTextContainer)) {
         content += getInnerText(node, false, config.excludeContainers)
