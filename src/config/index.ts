@@ -7,6 +7,7 @@ export enum Mode {
 
 export enum FullTextContainer {
   Article = "article",
+  Section = "section",
   Main = "main",
   Body = "body"
 }
@@ -52,9 +53,13 @@ export enum ConfigKeys {
 
 const defaultConfigs = {
   [ConfigKeys.mode]: Mode.Active,
-  [ConfigKeys.fullTextContainers]: Object.values<string>(FullTextContainer),
-  [ConfigKeys.excludeContainers]:
-    Object.values<string>(ExcludeContainer).sort(),
+  [ConfigKeys.fullTextContainers]: [
+    FullTextContainer.Article,
+    FullTextContainer.Body
+  ],
+  [ConfigKeys.excludeContainers]: Object.values<string>(ExcludeContainer)
+    .filter((v) => v != ExcludeContainer.Header)
+    .sort(),
   [ConfigKeys.headingAnchor]: HeadingAnchor.H2,
   [ConfigKeys.theme]: Theme.System,
   [ConfigKeys.minWords]: 0,

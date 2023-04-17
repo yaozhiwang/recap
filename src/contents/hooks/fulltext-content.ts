@@ -4,7 +4,7 @@ import { getInnerText } from "~utils/dom"
 import { useFullTextContainer } from "./fulltext-container"
 
 export function useFullTextContent(url: string) {
-  const [content, setContent] = useState("")
+  const [content, setContent] = useState([])
 
   const { enabled, enabledDetails, config } = useSiteConfigWithPreview(url)
   const [fullTextContainer] = useFullTextContainer(config)
@@ -21,9 +21,9 @@ export function useFullTextContent(url: string) {
       if (!enabled) {
         return
       }
-      let content = ""
+      let content = []
       for (const node of document.querySelectorAll(fullTextContainer)) {
-        content += getInnerText(node, false, config.excludeContainers)
+        content.push(getInnerText(node, false, config.excludeContainers))
       }
       setContent(content)
     })()
