@@ -43,28 +43,53 @@ const PanelOverlay = () => {
   const [theme] = useTheme()
   const [show, setShow] = useState(false)
   const [position, setPosition] = useState<PanelPosition>()
-  const enabledRef = useRef(false)
   const textContent = useRef("")
   const [summarySource, setSummarySource] = useState<"page" | "text">()
   const [summaryContent, setSummaryContent] = useState<SummaryContent>(null)
 
-  const [articleSummary, startSummarizeArticle] = useSummaryContent()
   const [textSummary, startSummarizeText] = useSummaryContent()
-  const articleSummaryRef = useRef<SummaryContent>(null)
   const textSummaryRef = useRef<SummaryContent>(null)
 
+  const [articleSummary, startSummarizeArticle] = useSummaryContent()
   const [pageSummary, setPageSummary] = useState<SummaryContent[]>([])
-  const pendingSumarizePage = useRef(false)
+
+  const enum SummarizePageStatus {
+    Running = "running",
+    Finished = "finished"
+  }
+
+  const [summarizePageStatus, setSummarizePageStatus] = useState(
+    SummarizePageStatus.Finished
+  )
+  const summarizePageStatusRef = useRef(SummarizePageStatus.Finished)
 
   const {
     enabled,
     enabledDetails,
     content: pageContent
   } = usePageContent(urlNormalize(location.href))
+  const enabledRef = useRef(false)
+  const pageContentRef = useRef(null)
 
   useEffect(() => {
     enabledRef.current = enabled
   }, [enabled])
+
+  useEffect(() => {
+    pageContentRef.current = pageContent
+  }, [pageContent])
+
+  useEffect(() => {
+    if (textSummary) {
+      textSummaryRef.current = textSummary
+    }
+  }, [textSummary])
+
+  useEffect(() => {
+    if (summarizePageStatus) {
+      summarizePageStatusRef.current = summarizePageStatus
+    }
+  }, [summarizePageStatus])
 
   useEffect(() => {
     ;(async () => {
@@ -85,14 +110,6 @@ const PanelOverlay = () => {
     })
   }, [enabledDetails])
 
-  // TODO: should can be deleted
-  useEffect(() => {
-    if (pendingSumarizePage.current) {
-      pendingSumarizePage.current = false
-      summarizePage()
-    }
-  }, [pageContent])
-
   useEffect(() => {
     const listener = function (msg) {
       if (msg?.name === MessageNames.TogglePanel) {
@@ -101,7 +118,7 @@ const PanelOverlay = () => {
         setShow(true)
         setSummarySource("text")
         if (isRunningStatus(textSummaryRef.current?.status)) {
-          // TODO: show notification to user that there is a pending summary
+          // TODO: show notification to user that there is a running task
           return
         }
         textContent.current = msg?.text
@@ -116,12 +133,8 @@ const PanelOverlay = () => {
           })
           return
         }
-        if (
-          articleSummaryRef.current === null ||
-          articleSummaryRef.current.status === SummaryStatus.Error
-        ) {
-          summarizePage()
-        }
+
+        summarizePage()
       }
     }
     chrome.runtime.onMessage.addListener(listener)
@@ -176,7 +189,10 @@ const PanelOverlay = () => {
     let text = ""
     text += pageSummary
       .map((article, idx) => {
-        let lines = [`Article #${idx + 1}`]
+        let lines = []
+        if (pageContent.articles.length > 1) {
+          lines.push(`Article #${idx + 1}`)
+        }
         if (pageContent.articles[idx].title) {
           lines.push(`Title: ${pageContent.articles[idx].title}`)
           lines.push(`Summary: ${article.data}`)
@@ -190,8 +206,6 @@ const PanelOverlay = () => {
 
   useEffect(() => {
     if (articleSummary) {
-      articleSummaryRef.current = articleSummary
-
       if (articleSummary.status === SummaryStatus.Finish) {
         const newPageSummary = [...pageSummary]
         newPageSummary.push(articleSummary)
@@ -199,17 +213,22 @@ const PanelOverlay = () => {
           startSummarizeArticle(
             pageContent.articles[newPageSummary.length].content
           )
+        } else {
+          setSummarizePageStatus(SummarizePageStatus.Finished)
         }
         setPageSummary(newPageSummary)
       }
     }
   }, [articleSummary])
 
-  useEffect(() => {
-    if (textSummary) {
-      textSummaryRef.current = textSummary
+  const isRunning = useMemo(() => {
+    if (summarySource === "text") {
+      return isRunningStatus(textSummary?.status)
+    } else if (summarySource === "page") {
+      return summarizePageStatus !== SummarizePageStatus.Finished
     }
-  }, [textSummary])
+    return false
+  }, [summarySource, textSummary, summarizePageStatus])
 
   function rerun() {
     if (summarySource === "text") {
@@ -222,26 +241,32 @@ const PanelOverlay = () => {
   }
 
   function summarizePage() {
-    if (!pageContent) {
+    if (!pageContentRef.current) {
       setSummaryContent({
-        status: SummaryStatus.Loading,
+        status: SummaryStatus.Error,
         data: {
-          message: "Parsing page content..."
+          message:
+            "Still working on parsing content, please try rerunning later"
         }
       })
-      pendingSumarizePage.current = true
       return
     }
 
-    if (pageContent.articles.length === 0) {
+    if (pageContentRef.current.articles.length === 0) {
       setSummaryContent({
         status: SummaryStatus.Error,
         data: { message: "No article found in this page.", showBugReport: true }
       })
       return
     }
+
+    if (summarizePageStatusRef.current === SummarizePageStatus.Running) {
+      // TODO: show notification to user that there is a running task
+      return
+    }
+    setSummarizePageStatus(SummarizePageStatus.Running)
     setPageSummary([])
-    startSummarizeArticle(pageContent.articles[0].content)
+    startSummarizeArticle(pageContentRef.current.articles[0].content)
   }
 
   return (
@@ -259,9 +284,7 @@ const PanelOverlay = () => {
               position == PanelPosition.Right
                 ? "top-16 right-8 h-[500] w-[448]"
                 : "",
-              isRunningStatus(summaryContent?.status)
-                ? "cursor-wait"
-                : "cursor-default",
+              isRunning ? "cursor-wait" : "cursor-default",
               "fixed overflow-hidden rounded-2xl bg-white text-black shadow-lg shadow-neutral-300 dark:bg-neutral-900 dark:text-white"
             )}>
             <div
@@ -288,11 +311,7 @@ const PanelOverlay = () => {
               <div className="flex flex-row items-center gap-2">
                 <button
                   className="cursor-pointer enabled:hover:text-slate-500 disabled:cursor-not-allowed disabled:opacity-50 enabled:dark:hover:text-slate-400"
-                  disabled={
-                    !enabled ||
-                    !summaryContent ||
-                    isRunningStatus(summaryContent?.status)
-                  }
+                  disabled={!enabled || !summaryContent || isRunning}
                   onClick={(e) => {
                     rerun()
                   }}>
