@@ -1,3 +1,5 @@
+import { HeadingAnchor } from "~config"
+
 export function isElemVisible(elem: HTMLElement) {
   return (
     !!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length) &&
@@ -73,4 +75,46 @@ margin: 0px;`.trim()
   }
 
   return text.replaceAll(/[ \t]+/g, " ").trim()
+}
+
+export function getTitle(container: Element, excludes?: string[]) {
+  const headings = getAllHeadingAnchors(container)
+
+  if (headings.length <= 0) {
+    return ""
+  }
+
+  if (!excludes || excludes.length <= 0) {
+    return (headings[0] as HTMLElement).innerText
+  }
+
+  for (const heading of headings) {
+    if (!hasExcludeAncestor(heading, excludes!)) {
+      return (heading as HTMLElement).innerText
+    }
+  }
+
+  return ""
+}
+
+export function getAllHeadingAnchors(container?: Element) {
+  const selector = Object.values(HeadingAnchor)
+    .map((value) => `${value}`)
+    .join(",")
+
+  const root = container || document.body
+  return root.querySelectorAll(selector)
+}
+
+export function hasExcludeAncestor(elem: Element, excludes: string[]) {
+  let e = elem
+  while (e) {
+    const tag = e.tagName.toLowerCase()
+    if (excludes.indexOf(tag) > -1) {
+      return true
+    }
+    e = e.parentElement || null
+  }
+
+  return false
 }

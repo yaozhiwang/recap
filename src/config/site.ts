@@ -18,7 +18,7 @@ export function getPageItemKey(url: string, normalized: boolean) {
 }
 
 export interface SourceTextConfig {
-  fullTextContainers: string[]
+  articleContainers: string[]
   excludeContainers: string[]
   headingAnchor: string
 }

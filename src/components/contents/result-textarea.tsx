@@ -38,6 +38,7 @@ export default function ResultTextArea(props: { content: SummaryContent }) {
           </svg>
           <span className="sr-only">Loading...</span>
         </div>
+        <div className="mt-1 text-xs opacity-60">{content?.data?.message}</div>
       </div>
     )
   } else if (content?.status == SummaryStatus.Error) {
@@ -63,7 +64,23 @@ export default function ResultTextArea(props: { content: SummaryContent }) {
         </div>
       )
     }
-    return <div className="p-6 text-red-500">{content.data.message}</div>
+    return (
+      <div className="p-6 text-red-500">
+        <p>{content.data.message}</p>
+        {content.data.showBugReport && (
+          <p className="mt-2 block text-xs italic">
+            If you believe this is not correct, please{" "}
+            <a
+              className="underline"
+              href="https://github.com/yaozhiwang/recap/issues"
+              target="_blank"
+              rel="noreferrer">
+              file a bug
+            </a>
+          </p>
+        )}
+      </div>
+    )
   }
   return (
     <div className="group relative h-full overflow-hidden ">
@@ -96,8 +113,13 @@ export default function ResultTextArea(props: { content: SummaryContent }) {
       </div>
 
       <div className="h-full overflow-y-scroll px-4 py-6">
-        <ReactMarkdown rehypePlugins={[[rehypeHighlight, { detect: true }]]}>
-          {content?.data}
+        <ReactMarkdown
+          rehypePlugins={[[rehypeHighlight, { detect: true }]]}
+          className="whitespace-pre-wrap">
+          {
+            // change newline to display https://github.com/remarkjs/react-markdown/issues/273
+            content?.data
+          }
         </ReactMarkdown>
       </div>
     </div>

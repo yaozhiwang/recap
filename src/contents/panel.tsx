@@ -18,7 +18,7 @@ import {
   IoRefreshCircleOutline as RerunIcon
 } from "~icons"
 import { classNames } from "~utils"
-import { useFullTextContent } from "./hooks/fulltext-content"
+import { usePageContent } from "./hooks/page-content"
 import {
   SummaryContent,
   SummaryStatus,
@@ -43,27 +43,28 @@ const PanelOverlay = () => {
   const [theme] = useTheme()
   const [show, setShow] = useState(false)
   const [position, setPosition] = useState<PanelPosition>()
-  const pageContent = useRef("")
+  const enabledRef = useRef(false)
   const textContent = useRef("")
   const [summarySource, setSummarySource] = useState<"page" | "text">()
+  const [summaryContent, setSummaryContent] = useState<SummaryContent>(null)
 
-  const [pageSummary, startSummarizePage] = useSummaryContent()
+  const [articleSummary, startSummarizeArticle] = useSummaryContent()
   const [textSummary, startSummarizeText] = useSummaryContent()
-  const pageSummaryRef = useRef<SummaryContent>(null)
+  const articleSummaryRef = useRef<SummaryContent>(null)
   const textSummaryRef = useRef<SummaryContent>(null)
 
-  const { enabledDetails, content: fullTextContent } = useFullTextContent(
-    urlNormalize(location.href)
-  )
+  const [pageSummary, setPageSummary] = useState<SummaryContent[]>([])
+  const pendingSumarizePage = useRef(false)
 
-  const summaryContent = useMemo(() => {
-    if (summarySource === "page") {
-      return pageSummary
-    } else if (summarySource === "text") {
-      return textSummary
-    }
-    return null
-  }, [summarySource, pageSummary, textSummary])
+  const {
+    enabled,
+    enabledDetails,
+    content: pageContent
+  } = usePageContent(urlNormalize(location.href))
+
+  useEffect(() => {
+    enabledRef.current = enabled
+  }, [enabled])
 
   useEffect(() => {
     ;(async () => {
@@ -84,9 +85,13 @@ const PanelOverlay = () => {
     })
   }, [enabledDetails])
 
+  // TODO: should can be deleted
   useEffect(() => {
-    pageContent.current = fullTextContent
-  }, [fullTextContent])
+    if (pendingSumarizePage.current) {
+      pendingSumarizePage.current = false
+      summarizePage()
+    }
+  }, [pageContent])
 
   useEffect(() => {
     const listener = function (msg) {
@@ -104,11 +109,18 @@ const PanelOverlay = () => {
       } else if (msg?.name === MessageNames.SummarizePage) {
         setShow(true)
         setSummarySource("page")
+        if (!enabledRef.current) {
+          setSummaryContent({
+            status: SummaryStatus.Error,
+            data: { message: "Recap is disabled on this page" }
+          })
+          return
+        }
         if (
-          pageSummaryRef.current === null ||
-          pageSummaryRef.current.status === SummaryStatus.Error
+          articleSummaryRef.current === null ||
+          articleSummaryRef.current.status === SummaryStatus.Error
         ) {
-          startSummarizePage(pageContent.current)
+          summarizePage()
         }
       }
     }
@@ -119,10 +131,79 @@ const PanelOverlay = () => {
   }, [])
 
   useEffect(() => {
-    if (pageSummary) {
-      pageSummaryRef.current = pageSummary
+    if (summarySource === "page") {
+      if (!articleSummary) {
+        return
+      }
+
+      let text = ""
+      if (pageSummaryHeader) {
+        text += pageSummaryHeader + "\n\n"
+      }
+
+      if (pageSummaryFinished) {
+        text += pageSummaryFinished + "\n\n"
+      }
+
+      if (articleSummary) {
+        if (articleSummary.status !== SummaryStatus.Finish) {
+          text += articleSummary.data
+        }
+      }
+
+      setSummaryContent({ status: SummaryStatus.Finish, data: text })
+    } else if (summarySource == "text") {
+      setSummaryContent(textSummary)
     }
+  }, [summarySource, articleSummary, textSummary, pageSummary])
+
+  const pageSummaryHeader = useMemo(() => {
+    if (!pageContent) {
+      return ""
+    }
+
+    let text = ""
+    if (pageContent.articles.length > 1) {
+      if (pageContent.title) {
+        text += "Page Title: " + pageContent.title + "\n"
+      }
+      text += `There are ${pageContent.articles.length} articles in this page.`
+    }
+    return text
+  }, [pageContent])
+
+  const pageSummaryFinished = useMemo(() => {
+    let text = ""
+    text += pageSummary
+      .map((article, idx) => {
+        let lines = [`Article #${idx + 1}`]
+        if (pageContent.articles[idx].title) {
+          lines.push(`Title: ${pageContent.articles[idx].title}`)
+          lines.push(`Summary: ${article.data}`)
+        }
+        return lines.join("\n")
+      })
+      .join("\n\n")
+
+    return text
   }, [pageSummary])
+
+  useEffect(() => {
+    if (articleSummary) {
+      articleSummaryRef.current = articleSummary
+
+      if (articleSummary.status === SummaryStatus.Finish) {
+        const newPageSummary = [...pageSummary]
+        newPageSummary.push(articleSummary)
+        if (newPageSummary.length < pageContent.articles.length) {
+          startSummarizeArticle(
+            pageContent.articles[newPageSummary.length].content
+          )
+        }
+        setPageSummary(newPageSummary)
+      }
+    }
+  }, [articleSummary])
 
   useEffect(() => {
     if (textSummary) {
@@ -136,8 +217,31 @@ const PanelOverlay = () => {
     }
 
     if (summarySource === "page") {
-      startSummarizePage(pageContent.current)
+      summarizePage()
     }
+  }
+
+  function summarizePage() {
+    if (!pageContent) {
+      setSummaryContent({
+        status: SummaryStatus.Loading,
+        data: {
+          message: "Parsing page content..."
+        }
+      })
+      pendingSumarizePage.current = true
+      return
+    }
+
+    if (pageContent.articles.length === 0) {
+      setSummaryContent({
+        status: SummaryStatus.Error,
+        data: { message: "No article found in this page.", showBugReport: true }
+      })
+      return
+    }
+    setPageSummary([])
+    startSummarizeArticle(pageContent.articles[0].content)
   }
 
   return (
@@ -185,7 +289,9 @@ const PanelOverlay = () => {
                 <button
                   className="cursor-pointer enabled:hover:text-slate-500 disabled:cursor-not-allowed disabled:opacity-50 enabled:dark:hover:text-slate-400"
                   disabled={
-                    !summaryContent || isRunningStatus(summaryContent?.status)
+                    !enabled ||
+                    !summaryContent ||
+                    isRunningStatus(summaryContent?.status)
                   }
                   onClick={(e) => {
                     rerun()

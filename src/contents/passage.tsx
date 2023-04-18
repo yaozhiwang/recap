@@ -1,4 +1,3 @@
-import { Storage } from "@plasmohq/storage"
 import { useStorage } from "@plasmohq/storage/hook"
 import cssText from "data-text:./passage.css"
 import baseCssText from "data-text:~/style.css"
@@ -11,22 +10,23 @@ import type {
 import { useMemo, useState } from "react"
 import { createRoot } from "react-dom/client"
 import { ResultTextArea } from "~components/contents"
-import { ConfigKeys, HeadingAnchor, Theme, urlNormalize } from "~config"
+import ProviderInfo from "~components/provider-info"
+import { ConfigKeys, Theme, urlNormalize } from "~config"
 import { useTheme } from "~hooks"
 import {
-  HiOutlineClipboardList as SummarizeIcon,
+  TbLayoutNavbarCollapse as CloseIcon,
   HiOutlineReceiptRefund as RecapIcon,
   IoRefreshCircleOutline as RerunIcon,
-  TbLayoutNavbarCollapse as CloseIcon
+  HiOutlineClipboardList as SummarizeIcon
 } from "~icons"
 import { classNames } from "~utils"
+import { getAllHeadingAnchors } from "~utils/dom"
 import { usePassageContent } from "./hooks/passage-content"
 import {
-  isRunningStatus,
   SummaryStatus,
+  isRunningStatus,
   useSummaryContent
 } from "./hooks/summary-content"
-import ProviderInfo from "~components/provider-info"
 
 export const config: PlasmoCSConfig = {
   matches: ["http://*/*", "https://*/*"]
@@ -40,7 +40,7 @@ export const getStyle = () => {
 
 let anchorList: NodeList = null
 export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
-  anchorList = await getAllHeadingAnchors()
+  anchorList = getAllHeadingAnchors()
 
   // anchorList = Array.prototype.filter.call(
   //   anchorList,
@@ -188,20 +188,6 @@ const PassageInline = (props: { anchor: PlasmoCSUIAnchor }) => {
       ) : null}
     </>
   )
-}
-
-export async function getAllHeadingAnchors() {
-  const storage = new Storage()
-  const containers = await storage.get<string[]>(ConfigKeys.fullTextContainers)
-
-  let selector = containers
-    .map((container) =>
-      Object.values(HeadingAnchor).map((value) => `${container} ${value}`)
-    )
-    .flat()
-    .join(",")
-
-  return document.querySelectorAll(selector)
 }
 
 function ToggleButton(props: {

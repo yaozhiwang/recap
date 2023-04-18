@@ -5,7 +5,7 @@ export enum Mode {
   Active = "active"
 }
 
-export enum FullTextContainer {
+export enum ArticleContainer {
   Article = "article",
   Section = "section",
   Main = "main",
@@ -42,7 +42,7 @@ export enum PanelPosition {
 
 export enum ConfigKeys {
   mode = "config.mode",
-  fullTextContainers = "config.fullTextContainers",
+  articleContainers = "config.articleContainers",
   excludeContainers = "config.excludeContainers",
   headingAnchor = "config.headingAnchor",
   theme = "config.theme",
@@ -53,9 +53,9 @@ export enum ConfigKeys {
 
 const defaultConfigs = {
   [ConfigKeys.mode]: Mode.Active,
-  [ConfigKeys.fullTextContainers]: [
-    FullTextContainer.Article,
-    FullTextContainer.Body
+  [ConfigKeys.articleContainers]: [
+    ArticleContainer.Article,
+    ArticleContainer.Body
   ],
   [ConfigKeys.excludeContainers]: Object.values<string>(ExcludeContainer)
     .filter((v) => v != ExcludeContainer.Header)

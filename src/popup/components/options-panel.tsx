@@ -7,8 +7,8 @@ import { PreviewConfigKey } from "~constants"
 import type { ConfigType } from "~hooks/site-config"
 import { HiChevronDown } from "~icons"
 import {
+  ArticleContainerStep,
   ExcludeCantainerCheckBox,
-  FullTextContainerStep,
   HeadingAnchorSelect
 } from "~options/components/"
 import { classNames } from "~utils"
@@ -53,20 +53,20 @@ export default function OptionsPanel(props: {
           <div className="flex flex-col gap-0.5">
             <div>
               <label
-                htmlFor="fulltext-container"
+                htmlFor="article-container"
                 className="block text-sm font-medium">
-                Full-text Containers:
+                Article Containers:
               </label>
               <p className="text-xs text-neutral-500">
-                The full-text container will be tried in following order
+                The article container will be tried in following order
               </p>
             </div>
-            <div id="fulltext-container">
-              <FullTextContainerStep
-                containers={srcTxtConfig.fullTextContainers}
+            <div id="article-container">
+              <ArticleContainerStep
+                containers={srcTxtConfig.articleContainers}
                 onUpdate={(newContainers) => {
                   const newConfig = { ...srcTxtConfig }
-                  newConfig.fullTextContainers = newContainers
+                  newConfig.articleContainers = newContainers
                   setSrcTxtConfig(newConfig)
                 }}
                 size="small"

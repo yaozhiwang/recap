@@ -38,7 +38,10 @@ export function useSummaryContent() {
   }
 
   function start(content: string) {
-    setSummary({ status: SummaryStatus.Loading, data: null })
+    setSummary({
+      status: SummaryStatus.Loading,
+      data: { message: "connecting to provider..." }
+    })
     port = chrome.runtime.connect({
       name: PortNames.Summarize
     })

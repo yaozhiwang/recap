@@ -5,9 +5,10 @@ import logo from "url:~assets/icon.png"
 import { ConfigKeys, PanelPosition, Theme } from "~config"
 import { useTheme } from "~hooks"
 import { getExtensionVersion } from "~utils"
+import { generateActionIconsIfAbesent } from "~utils/action-icon"
 import {
+  ArticleContainerStep,
   ExcludeCantainerCheckBox,
-  FullTextContainerStep,
   HeadingAnchorSelect,
   ModeRadioGroup,
   ProviderTab,
@@ -15,14 +16,13 @@ import {
   ShortcutsTable
 } from "./components"
 import "./options.css"
-import { generateActionIconsIfAbesent } from "~utils/action-icon"
 
 function IndexOptions() {
   const [theme, configTheme, setTheme] = useTheme()
   const [minWords, setMinWords] = useStorage(ConfigKeys.minWords)
   const [panelPosition, setPanelPosition] = useStorage(ConfigKeys.panelPosition)
   const [containers, setContainers] = useStorage<string[]>(
-    ConfigKeys.fullTextContainers
+    ConfigKeys.articleContainers
   )
   const [excludes, setExcludes] = useStorage<string[]>(
     ConfigKeys.excludeContainers
@@ -247,16 +247,16 @@ function IndexOptions() {
           <div className="flex flex-col gap-0.5">
             <div>
               <label
-                htmlFor="fulltext-container"
+                htmlFor="article-container"
                 className="block text-lg font-medium">
-                Default Full-text Containers:
+                Default Article Containers:
               </label>
               <p className="text-sm text-neutral-500">
-                The full-text container will be tried in following order
+                The article container will be tried in following order
               </p>
             </div>
-            <div id="fulltext-container">
-              <FullTextContainerStep
+            <div id="article-container">
+              <ArticleContainerStep
                 containers={containers}
                 onUpdate={setContainers}
               />

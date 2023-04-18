@@ -1,8 +1,8 @@
 import { range } from "lodash-es"
 import { useEffect, useMemo, useState } from "react"
 import { useSiteConfigWithPreview } from "~hooks"
-import { getInnerText } from "~utils/dom"
-import { useFullTextContainer } from "./fulltext-container"
+import { getInnerText, hasExcludeAncestor } from "~utils/dom"
+import { useArticleContainers } from "./article-container"
 
 export function usePassageContent(url: string, anchor: Element) {
   const [show, setShow] = useState<boolean>(false)
@@ -10,7 +10,7 @@ export function usePassageContent(url: string, anchor: Element) {
   const [prevText, setPrevText] = useState("")
 
   const { enabled, config } = useSiteConfigWithPreview(url)
-  const [fullTextContainer] = useFullTextContainer(config)
+  const [articleContainers] = useArticleContainers(config)
 
   const headingLevel = getHeadingLevel(anchor.tagName.toLowerCase())
   const configHeadingLevel = useMemo(() => {
@@ -32,14 +32,8 @@ export function usePassageContent(url: string, anchor: Element) {
       const excludes = config.excludeContainers
 
       if (shouldShow && excludes.length > 0) {
-        let e = anchor
-        while (e) {
-          const tag = e.tagName.toLowerCase()
-          if (excludes.indexOf(tag) > -1) {
-            shouldShow = false
-            break
-          }
-          e = e.parentElement || null
+        if (hasExcludeAncestor(anchor, excludes)) {
+          shouldShow = false
         }
       }
     }
@@ -48,8 +42,11 @@ export function usePassageContent(url: string, anchor: Element) {
 
   useEffect(() => {
     ;(async () => {
-      if (fullTextContainer && config) {
-        const [container, path] = findContainer(anchor, fullTextContainer)
+      if (articleContainers && config) {
+        const [container, path] = findContainer(
+          anchor,
+          articleContainers[0].tagName
+        )
         setText(
           await getPassageText(
             anchor,
@@ -68,7 +65,7 @@ export function usePassageContent(url: string, anchor: Element) {
         )
       }
     })()
-  }, [fullTextContainer, config])
+  }, [articleContainers, config])
 
   return {
     show,

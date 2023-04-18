@@ -1,15 +1,15 @@
 import { useStorage } from "@plasmohq/storage/hook"
 import { useMemo } from "react"
-import { ConfigKeys, SourceTextConfig } from "~config"
+import { ConfigKeys, type SourceTextConfig } from "~config"
 
 export function useDefaultSourceTextConfig() {
-  const [defaultFullTextContainer] = useStorage(ConfigKeys.fullTextContainers)
+  const [defaultArticleContainer] = useStorage(ConfigKeys.articleContainers)
   const [defaultExcludeContainers] = useStorage(ConfigKeys.excludeContainers)
   const [defaultHeadingAnchor] = useStorage(ConfigKeys.headingAnchor)
 
   const defaultConfig = useMemo<SourceTextConfig>(() => {
     if (
-      defaultFullTextContainer === undefined ||
+      defaultArticleContainer === undefined ||
       defaultExcludeContainers === undefined ||
       defaultHeadingAnchor === undefined
     ) {
@@ -17,11 +17,11 @@ export function useDefaultSourceTextConfig() {
     }
 
     return {
-      fullTextContainers: defaultFullTextContainer,
+      articleContainers: defaultArticleContainer,
       excludeContainers: defaultExcludeContainers,
       headingAnchor: defaultHeadingAnchor
     }
-  }, [defaultFullTextContainer, defaultExcludeContainers, defaultHeadingAnchor])
+  }, [defaultArticleContainer, defaultExcludeContainers, defaultHeadingAnchor])
 
   return [defaultConfig] as const
 }

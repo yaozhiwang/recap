@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 import { default as DropDownMenu } from "~components/dropdown-menu"
-import { FullTextContainer } from "~config"
+import { ArticleContainer } from "~config"
 import {
   HiOutlinePlusCircle as AddIcon,
   HiOutlineX as DeleteIcon,
@@ -8,7 +8,7 @@ import {
 } from "~icons"
 import { classNames, tagDisplayName } from "~utils"
 
-export default function FullTextContainerStep(props: {
+export default function ArticleContainerStep(props: {
   containers: string[]
   onUpdate: (newContainers: string[]) => void
   size?: "small" | "normal"
@@ -21,7 +21,7 @@ export default function FullTextContainerStep(props: {
     if (containers == undefined) {
       return []
     }
-    return Object.values(FullTextContainer).filter(
+    return Object.values(ArticleContainer).filter(
       (e) => containers.indexOf(e) < 0
     )
   }, [containers])
@@ -120,7 +120,7 @@ export default function FullTextContainerStep(props: {
               ))}
             </div>
           ) : null}
-          {containers.length < Object.keys(FullTextContainer).length ? (
+          {containers.length < Object.keys(ArticleContainer).length ? (
             <div className="flex items-center justify-center text-neutral-200 hover:text-black dark:text-neutral-500 hover:dark:text-white">
               <DropDownMenu
                 button={<AddIcon className="h-6 w-6" />}
