@@ -115,35 +115,8 @@ async function getPreviousText(
   path: Node[],
   excludes?: string[]
 ) {
-  let nextNode: Node | null = null
-  const nodes: Node[] = []
-
-  nextNode = node
-  while (nextNode && nextNode !== container) {
-    nodes.push(nextNode)
-    nextNode = nextNode.parentNode || null
-  }
-
-  if (nodes.length < 1 || nodes[nodes.length - 1] === container) {
-    console.error("Could not find container up DOM tree")
-    return ""
-  }
-
-  const newElem = document.createElement("div")
-  for (let i = nodes.length - 2; i >= 0; i--) {
-    const parent = nodes[i + 1]
-    const child = nodes[i]
-
-    for (const ch of parent.childNodes) {
-      if (ch === child) {
-        break
-      }
-      newElem.appendChild(ch.cloneNode(true))
-    }
-  }
-
-  const text = getInnerText(newElem, true, excludes)
-  newElem.remove()
+  const root = extractSubtree(container, null, path)
+  const text = getInnerText(root, true, excludes)
 
   return text
 }
@@ -321,7 +294,6 @@ function extractSubtreeAbove(root: Node, boundary: Node[]) {
   if (boundary.length === 0 && boundary[boundary.length - 1] !== root) {
     throw TypeError("boundary not end with root")
   }
-
   let newParent = root.cloneNode(false)
   const subtree = newParent
 
@@ -329,7 +301,9 @@ function extractSubtreeAbove(root: Node, boundary: Node[]) {
     let parent = boundary[i + 1]
     for (const ch of parent.childNodes) {
       if (ch === boundary[i]) {
-        newParent = ch.cloneNode(false)
+        const newNode = ch.cloneNode(false)
+        newParent.appendChild(newNode)
+        newParent = newNode
         break
       }
       newParent.appendChild(ch.cloneNode(true))
