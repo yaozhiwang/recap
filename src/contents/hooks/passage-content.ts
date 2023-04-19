@@ -22,13 +22,20 @@ export function usePassageContent(url: string, anchor: Element) {
 
   useEffect(() => {
     let shouldShow = false
-    if (enabled && config) {
+    if (enabled && articleContainers && config) {
       if (headingLevel === 0 || configHeadingLevel === 0) {
         shouldShow = headingLevel === configHeadingLevel
       } else {
         shouldShow = headingLevel <= configHeadingLevel
       }
 
+      const [container, path] = findContainer(
+        anchor,
+        articleContainers[0].tagName
+      )
+      if (container === null) {
+        shouldShow = false
+      }
       const excludes = config.excludeContainers
 
       if (shouldShow && excludes.length > 0) {
@@ -36,36 +43,31 @@ export function usePassageContent(url: string, anchor: Element) {
           shouldShow = false
         }
       }
-    }
-    setShow(shouldShow)
-  }, [enabled, config])
 
-  useEffect(() => {
-    ;(async () => {
-      if (articleContainers && config) {
-        const [container, path] = findContainer(
-          anchor,
-          articleContainers[0].tagName
-        )
-        setText(
-          await getPassageText(
-            anchor,
-            container,
-            path,
-            config.excludeContainers
+      if (shouldShow) {
+        ;(async () => {
+          setText(
+            await getPassageText(
+              anchor,
+              container,
+              path,
+              config.excludeContainers
+            )
           )
-        )
-        setPrevText(
-          await getPreviousText(
-            anchor,
-            container,
-            path,
-            config.excludeContainers
+          setPrevText(
+            await getPreviousText(
+              anchor,
+              container,
+              path,
+              config.excludeContainers
+            )
           )
-        )
+        })()
       }
-    })()
-  }, [articleContainers, config])
+    }
+
+    setShow(shouldShow)
+  }, [enabled, articleContainers, config])
 
   return {
     show,
