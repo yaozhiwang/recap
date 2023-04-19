@@ -22,6 +22,7 @@ import { usePageContent } from "./hooks/page-content"
 import {
   SummaryContent,
   SummaryStatus,
+  isDoneStatus,
   isRunningStatus,
   useSummaryContent
 } from "./hooks/summary-content"
@@ -159,7 +160,8 @@ const PanelOverlay = () => {
       }
 
       if (articleSummary) {
-        if (articleSummary.status !== SummaryStatus.Finish) {
+        if (articleSummary.status === SummaryStatus.Generating) {
+          text += getArticleHeader(pageSummary.length)
           text += articleSummary.data
         }
       }
@@ -189,15 +191,14 @@ const PanelOverlay = () => {
     let text = ""
     text += pageSummary
       .map((article, idx) => {
-        let lines = []
-        if (pageContent.articles.length > 1) {
-          lines.push(`Article #${idx + 1}`)
+        let articleText = getArticleHeader(idx)
+        if (article.status === SummaryStatus.Finish) {
+          articleText += `Summary: ${article.data}`
+        } else if (article.status === SummaryStatus.Error) {
+          articleText += `Error: ${article.data.message}\n`
         }
-        if (pageContent.articles[idx].title) {
-          lines.push(`Title: ${pageContent.articles[idx].title}`)
-          lines.push(`Summary: ${article.data}`)
-        }
-        return lines.join("\n")
+
+        return articleText
       })
       .join("\n\n")
 
@@ -206,7 +207,7 @@ const PanelOverlay = () => {
 
   useEffect(() => {
     if (articleSummary) {
-      if (articleSummary.status === SummaryStatus.Finish) {
+      if (isDoneStatus(articleSummary.status)) {
         const newPageSummary = [...pageSummary]
         newPageSummary.push(articleSummary)
         if (newPageSummary.length < pageContent.articles.length) {
@@ -267,6 +268,17 @@ const PanelOverlay = () => {
     setSummarizePageStatus(SummarizePageStatus.Running)
     setPageSummary([])
     startSummarizeArticle(pageContentRef.current.articles[0].content)
+  }
+
+  function getArticleHeader(idx: number) {
+    let text = ""
+    if (pageContent.articles.length > 1) {
+      text += `Article #${idx + 1}\n`
+    }
+    if (pageContent.articles[idx].title) {
+      text += `Title: ${pageContent.articles[idx].title}\n`
+    }
+    return text
   }
 
   return (
