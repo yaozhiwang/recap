@@ -7,7 +7,7 @@ export function isElemVisible(elem: HTMLElement) {
   )
 }
 
-const ExtraExcludeContainer = ["plasmo-csui"]
+const ExtraExcludeContainer = ["plasmo-csui", ".sr-only"]
 
 function getExcludes(excludes?: string[]) {
   return excludes
@@ -24,11 +24,14 @@ export function getInnerText(
   excludes = getExcludes(excludes)
 
   if (node instanceof HTMLElement) {
-    if (excludes?.indexOf(node.tagName.toLowerCase()) > -1) {
-      return text
+    for (let i = 0; i < excludes.length; i++) {
+      if (node.matches(excludes[i])) {
+        return text
+      }
     }
 
     let cloned = null
+
     if (excludes?.length > 0) {
       const selector = excludes!.join(",")
       if (node.querySelector(selector)) {
@@ -48,19 +51,17 @@ export function getInnerText(
         // So the trick is we append the cloned node on document.body to make it rendered,
         // and obviously we don't want it to be visible. But we can't simply set 'display: none' or use some other normal method to hide it,
         // because that will make the cloned node not rendered again.
-        // The following styles to hide out cloned node is found from google's home page, they hide the 'Accessibility' related content in this way.
+        // The following css is from "sr-only" of tailwindcss
         cloned.style.cssText = `
-clip: rect(1px,1px,1px,1px);
-height: 1px;
-overflow: hidden;
 position: absolute;
-white-space: nowrap;
 width: 1px;
-z-index: -1000;
-user-select: none;
--webkit-user-select: none;
-padding: 0px;
-margin: 0px;`.trim()
+height: 1px;
+padding: 0;
+margin: -1px;
+overflow: hidden;
+clip: rect(0, 0, 0, 0);
+white-space: nowrap;
+border-width: 0;`.trim()
         document.body.appendChild(cloned)
         text = cloned.innerText
         cloned.remove()
@@ -84,10 +85,6 @@ export function getTitle(container: Element, excludes?: string[]) {
     return ""
   }
 
-  if (!excludes || excludes.length <= 0) {
-    return (headings[0] as HTMLElement).innerText
-  }
-
   for (const heading of headings) {
     if (!hasExcludeAncestor(heading, excludes!)) {
       return (heading as HTMLElement).innerText
@@ -107,11 +104,14 @@ export function getAllHeadingAnchors(container?: Element) {
 }
 
 export function hasExcludeAncestor(elem: Element, excludes: string[]) {
+  excludes = getExcludes(excludes)
+
   let e = elem
   while (e) {
-    const tag = e.tagName.toLowerCase()
-    if (excludes.indexOf(tag) > -1) {
-      return true
+    for (let i = 0; i < excludes.length; i++) {
+      if (e.matches(excludes[i])) {
+        return true
+      }
     }
     e = e.parentElement || null
   }
