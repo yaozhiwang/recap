@@ -137,8 +137,10 @@ const PassageInline = (props: { anchor: PlasmoCSUIAnchor }) => {
           <details
             className="group/collaps relative mb-2 mt-2 overflow-hidden rounded-lg border border-neutral-200 bg-white text-black duration-300 open:w-full dark:border-neutral-500 dark:bg-neutral-900 dark:text-white"
             open={open}
-            onToggle={() => {
+            onClick={(e) => {
               setOpen((open) => !open)
+              e.stopPropagation()
+              e.preventDefault()
             }}>
             <summary className="flex cursor-row-resize items-center justify-between gap-0 bg-neutral-200 p-1 dark:bg-neutral-800">
               <div>
