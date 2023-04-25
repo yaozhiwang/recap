@@ -16,6 +16,7 @@ import {
   ShortcutsTable
 } from "./components"
 import "./options.css"
+import { AiFillStar } from "~icons"
 
 function IndexOptions() {
   const [theme, configTheme, setTheme] = useTheme()
@@ -70,6 +71,18 @@ function IndexOptions() {
           <span className="font-semibold">
             Recap (v{getExtensionVersion()})
           </span>
+          <a
+            href="https://chrome.google.com/webstore/detail/recap-smart-split-and-sum/fegolfhddfkibejadoipedlgcapbncml"
+            target="_blank"
+            rel="noreferrer">
+            <span className="flex text-amber-400">
+              <AiFillStar />
+              <AiFillStar />
+              <AiFillStar />
+              <AiFillStar />
+              <AiFillStar />
+            </span>
+          </a>
         </div>
         <div className="flex flex-row gap-3">
           {[
