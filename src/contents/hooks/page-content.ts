@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useSiteConfigWithPreview } from "~hooks"
-import { getInnerText, getTitle } from "~utils/dom"
+import { getInnerText, getArticleTitle, getPageTitle } from "~utils/dom"
 import { useArticleContainers } from "./article-container"
 
 interface ArticleContent {
@@ -35,16 +35,21 @@ export function usePageContent(url: string) {
     }
     for (const container of articleContainers) {
       const article = {
-        title: getTitle(container, config.excludeContainers),
+        title: getArticleTitle(container, config.excludeContainers),
         content: getInnerText(container, false, config.excludeContainers)
       }
       content.articles.push(article)
     }
     if (content.articles.length === 1) {
       content.title = content.articles[0].title
-    } else if (content.articles.length > 1) {
-      content.title = getTitle(document.body, config.excludeContainers)
     }
+    if (content.title == "") {
+      content.title = getPageTitle(config.excludeContainers)
+      if (content.articles[0].title == "") {
+        content.articles[0].title = content.title
+      }
+    }
+
     setContent(content)
   }, [articleContainers, enabled, config])
 

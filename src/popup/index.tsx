@@ -6,7 +6,7 @@ import { MessageNames } from "~constants"
 import {
   OptionsPanel,
   StatusSwitch,
-  StatusSwitchState,
+  type StatusSwitchState,
   SummarizeButton
 } from "./components"
 import "./popup.css"

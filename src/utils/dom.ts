@@ -78,8 +78,8 @@ border-width: 0;`.trim()
   return text.replaceAll(/[ \t]+/g, " ").trim()
 }
 
-export function getTitle(container: Element, excludes?: string[]) {
-  const headings = getAllHeadingAnchors(container)
+export function getArticleTitle(container: Element, excludes?: string[]) {
+  const headings = container.querySelectorAll("h1")
 
   if (headings.length <= 0) {
     return ""
@@ -92,6 +92,17 @@ export function getTitle(container: Element, excludes?: string[]) {
   }
 
   return ""
+}
+
+export function getPageTitle(excludes?: string[]) {
+  const title = getArticleTitle(document.body, excludes)
+
+  return (
+    title ||
+    (document.title || document.head.title)
+      .replace(RegExp("s*[|-]s*[^|-]+$"), "")
+      .trim()
+  )
 }
 
 export function getAllHeadingAnchors(container?: Element) {
