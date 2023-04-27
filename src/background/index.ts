@@ -4,14 +4,11 @@ import {
   toggleEnableHost,
   toggleEnablePage
 } from "~/config"
-import {
-  MessageNames,
-  PortNames,
-  ShortcutNames,
-  isFirstCacheKey
-} from "~constants"
+import { ShortcutNames, isFirstCacheKey } from "~constants"
 import { getLoadingActionIcon, getStatusActionIcon } from "./action-icon"
 import { summarize } from "./summarize"
+import { MessageNames, PortNames } from "~messaging"
+import { chatGPTWebAppClient } from "~provider/chatgpt-webapp/client"
 
 export {}
 
@@ -117,5 +114,7 @@ chrome.runtime.onMessage.addListener(async function (msg, sender) {
     if (imageData) {
       chrome.action.setIcon({ tabId: sender.tab.id, imageData })
     }
+  } else if (msg.name === MessageNames.FixChatGPTWebAppAuthState) {
+    await chatGPTWebAppClient.fixAuthState()
   }
 })

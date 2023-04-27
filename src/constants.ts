@@ -1,14 +1,3 @@
-export enum MessageNames {
-  SummarizeText = "summarize-text",
-  SummarizePage = "summarize-page",
-  TogglePanel = "toggle-panel",
-  UpdateActionIcon = "update-action-icon"
-}
-
-export enum PortNames {
-  Summarize = "summarize"
-}
-
 export const PreviewConfigKey: string = "preview.config"
 
 export enum ShortcutNames {
@@ -18,3 +7,5 @@ export enum ShortcutNames {
 }
 
 export const isFirstCacheKey: string = "cache.isFirst"
+
+export const ChatGPTHomeUrl = "https://chat.openai.com"

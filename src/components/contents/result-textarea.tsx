@@ -1,15 +1,29 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { CopyToClipboard } from "react-copy-to-clipboard"
 import ReactMarkdown from "react-markdown"
 import rehypeHighlight from "rehype-highlight"
 import { SummaryContent, SummaryStatus } from "~contents/hooks/summary-content"
+import { useOptionsUrl } from "~hooks"
 import { HiCheck as CopiedIcon, TbCopy as CopyIcon } from "~icons"
+import { MessageNames } from "~messaging"
 import { ProviderErrorCode } from "~provider/errors"
 import { classNames } from "~utils"
 
 export default function ResultTextArea(props: { content: SummaryContent }) {
   const { content } = props
   const [copied, setCopied] = useState(false)
+  const [optionsUrl] = useOptionsUrl()
+
+  const fixChatGPT = useCallback(async () => {
+    try {
+      await chrome.runtime.sendMessage({
+        name: MessageNames.FixChatGPTWebAppAuthState
+      })
+    } catch (e) {
+      console.error(e)
+      return
+    }
+  }, [])
 
   useEffect(() => {
     if (copied) {
@@ -47,20 +61,23 @@ export default function ResultTextArea(props: { content: SummaryContent }) {
       content.data.code === ProviderErrorCode.CHATGPT_UNAUTHORIZED
     ) {
       return (
-        <div className="p-6">
-          Please login and pass Cloudflare check at{" "}
-          <a
-            className="underline"
-            href="https://chat.openai.com"
-            target="_blank"
-            rel="noreferrer">
-            chat.openai.com
-          </a>
-          <span className="mt-2 block text-xs italic">
-            OpenAI requires passing a security check every once in a while. If
-            this keeps happening, change AI provider to OpenAI API in the
-            extension options.
-          </span>
+        <div className="p-6 text-red-500">
+          You have to pass Cloudflare check. Please retry after
+          <div className="mt-2 flex items-center gap-4">
+            <button
+              className="rounded-lg border border-blue-700 px-3 py-1.5 text-center text-sm font-medium text-blue-700 hover:bg-blue-800 hover:text-white dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-500 dark:hover:text-white"
+              onClick={fixChatGPT}>
+              login
+            </button>
+            or
+            <a
+              className="rounded-lg border border-blue-700 px-3 py-1.5 text-center text-sm font-medium text-blue-700 hover:bg-blue-800 hover:text-white dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-500 dark:hover:text-white"
+              href={`${optionsUrl}#provider`}
+              target="_blank"
+              rel="noreferrer">
+              Set API key
+            </a>
+          </div>
         </div>
       )
     }

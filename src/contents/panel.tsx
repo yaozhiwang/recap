@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { ResultTextArea } from "~components/contents"
 import ProviderInfo from "~components/provider-info"
 import { ConfigKeys, PanelPosition, Theme, urlNormalize } from "~config"
-import { MessageNames } from "~constants"
+import { MessageNames } from "~messaging"
 import { useTheme } from "~hooks"
 import {
   VscChromeClose as CloseIcon,

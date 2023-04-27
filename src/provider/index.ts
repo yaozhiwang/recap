@@ -1,6 +1,7 @@
 import { ProviderError, ProviderErrorCode } from "./errors"
 
 export interface SummarizeParams {
+  onLoading: (msg: string) => void
   onResult: (result: string) => void
   onFinish: (result: string) => void
   onError: (error: ProviderError) => void

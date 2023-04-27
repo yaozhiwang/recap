@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { PortNames } from "~constants"
+import { PortNames } from "~messaging"
 
 export enum SummaryStatus {
   Loading = "loading",
@@ -34,14 +34,15 @@ export function useSummaryContent() {
     } else if (msg.finish) {
       setSummary({ status: SummaryStatus.Finish, data: msg.finish })
       cleanup()
+    } else if (msg.loading) {
+      setSummary({
+        status: SummaryStatus.Loading,
+        data: { message: msg.loading }
+      })
     }
   }
 
   function start(content: string) {
-    setSummary({
-      status: SummaryStatus.Loading,
-      data: { message: "connecting to provider..." }
-    })
     port = chrome.runtime.connect({
       name: PortNames.Summarize
     })

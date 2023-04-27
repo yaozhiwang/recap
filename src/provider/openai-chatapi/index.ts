@@ -4,7 +4,7 @@ import {
   ProviderError,
   ProviderErrorCode
 } from "~provider/errors"
-import { Provider, SummarizeParams } from ".."
+import { Provider, type SummarizeParams } from ".."
 import { fetchSSE } from "../../utils/fetch-sse"
 
 export class OpenAIChatProvider extends Provider {
@@ -31,6 +31,7 @@ export class OpenAIChatProvider extends Provider {
       )
     }
 
+    params.onLoading("connecting to OpenAI...")
     try {
       await fetchSSE("https://api.openai.com/v1/chat/completions", {
         method: "POST",

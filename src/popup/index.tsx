@@ -2,15 +2,15 @@ import { useEffect, useState } from "react"
 
 import { Mode, Theme } from "~config"
 import { useSiteConfig, useTabUrl, useTheme } from "~hooks"
-import { MessageNames } from "~constants"
+import { useOptionsUrl } from "~hooks/options-url"
+import { MessageNames } from "~messaging"
 import {
   OptionsPanel,
   StatusSwitch,
-  type StatusSwitchState,
-  SummarizeButton
+  SummarizeButton,
+  type StatusSwitchState
 } from "./components"
 import "./popup.css"
-import { useOptionsUrl } from "~hooks/options-url"
 
 function IndexPopup() {
   const [statusSwitchState, setStatusSwitchState] =
