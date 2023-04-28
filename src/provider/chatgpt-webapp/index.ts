@@ -5,7 +5,7 @@ import {
   ProviderError,
   ProviderErrorCode
 } from "~provider/errors"
-import { fetchSSE } from "~utils/fetch-sse"
+import { parseSSEResponse } from "~utils/sse"
 import { Provider, type SummarizeParams } from ".."
 import { chatGPTWebAppClient } from "./client"
 
@@ -72,53 +72,64 @@ export class ChatGPTWebAppProvider extends Provider {
     try {
       let result = ""
       this.resetConversation()
-      await fetchSSE("https://chat.openai.com/backend-api/conversation", {
-        method: "POST",
-        signal: params.signal,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.#accessToken}`
-        },
-        body: JSON.stringify({
-          action: "next",
-          messages: [
-            {
-              id: uuidv4(),
-              author: { role: "user" },
-              content: {
-                content_type: "text",
-                parts: [text]
+      const resp = await chatGPTWebAppClient
+        .fetch("https://chat.openai.com/backend-api/conversation", {
+          method: "POST",
+          signal: params.signal,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.#accessToken}`
+          },
+          body: JSON.stringify({
+            action: "next",
+            messages: [
+              {
+                id: uuidv4(),
+                author: { role: "user" },
+                content: {
+                  content_type: "text",
+                  parts: [text]
+                }
               }
-            }
-          ],
-          model: modelName,
-          conversation_id:
-            this.#conversationContext?.conversationId || undefined,
-          parent_message_id:
-            this.#conversationContext?.lastMessageId || uuidv4()
-        }),
-        onMessage(message: string) {
-          if (message === "[DONE]") {
-            params.onFinish(result)
-            cleanup()
-            return
+            ],
+            model: modelName,
+            conversation_id:
+              this.#conversationContext?.conversationId || undefined,
+            parent_message_id:
+              this.#conversationContext?.lastMessageId || uuidv4()
+          })
+        })
+        .catch((err) => {
+          if (err instanceof TypeError) {
+            throw new ProviderError(
+              "Network error, please check your network.",
+              ProviderErrorCode.NETWORK_ERROR
+            )
+          } else {
+            throw err
           }
-          let data
-          try {
-            data = JSON.parse(message)
-          } catch (err) {
-            console.error(err)
-            return
+        })
+      await parseSSEResponse(resp, (message: string) => {
+        if (message === "[DONE]") {
+          params.onFinish(result)
+          cleanup()
+          return
+        }
+        let data
+        try {
+          data = JSON.parse(message)
+        } catch (err) {
+          console.error(err)
+          return
+        }
+        const resp = data.message?.content?.parts?.[0]
+        if (resp) {
+          this.#conversationContext = {
+            conversationId: data.conversation_id,
+            lastMessageId: data.message.id
           }
-          const resp = data.message?.content?.parts?.[0]
-          if (resp) {
-            this.#conversationContext = {
-              conversationId: data.conversation_id,
-              lastMessageId: data.message.id
-            }
-            result = resp
-            params.onResult(resp)
-          }
+          result = resp
+          params.onResult(resp)
         }
       })
     } catch (err) {

@@ -5,7 +5,7 @@ import {
   ProviderErrorCode
 } from "~provider/errors"
 import { Provider, type SummarizeParams } from ".."
-import { fetchSSE } from "../../utils/fetch-sse"
+import { parseSSEResponse } from "~utils/sse"
 
 export class OpenAIChatProvider extends Provider {
   #config: OpenAIProviderConfig
@@ -33,7 +33,7 @@ export class OpenAIChatProvider extends Provider {
 
     params.onLoading("connecting to OpenAI...")
     try {
-      await fetchSSE("https://api.openai.com/v1/chat/completions", {
+      const resp = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         signal: params.signal,
         headers: {
@@ -47,27 +47,37 @@ export class OpenAIChatProvider extends Provider {
           temperature: this.#config.temperature,
           top_p: this.#config.top_p,
           stream: true
-        }),
-        onMessage(message) {
-          if (message === "[DONE]") {
-            params.onFinish(result)
-            return
-          }
+        })
+      }).catch((err) => {
+        if (err instanceof TypeError) {
+          throw new ProviderError(
+            "Network error, please check your network.",
+            ProviderErrorCode.NETWORK_ERROR
+          )
+        } else {
+          throw err
+        }
+      })
 
-          try {
-            const response = JSON.parse(message)
-            if (response?.choices[0]?.finish_reason) {
-              return
-            }
-            const text = response?.choices[0]?.delta?.content
-            if (text) {
-              result += text
-              params.onResult(result)
-            }
-          } catch (err) {
-            console.error(err)
+      await parseSSEResponse(resp, (message) => {
+        if (message === "[DONE]") {
+          params.onFinish(result)
+          return
+        }
+
+        try {
+          const response = JSON.parse(message)
+          if (response?.choices[0]?.finish_reason) {
             return
           }
+          const text = response?.choices[0]?.delta?.content
+          if (text) {
+            result += text
+            params.onResult(result)
+          }
+        } catch (err) {
+          console.error(err)
+          return
         }
       })
     } catch (err) {
