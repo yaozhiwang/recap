@@ -37,8 +37,8 @@ export const getStyle = () => {
   return style
 }
 
-export const getOverlayAnchor: PlasmoGetOverlayAnchor = async () =>
-  document.body
+// export const getOverlayAnchor: PlasmoGetOverlayAnchor = async () =>
+//   document.body
 
 const PanelOverlay = () => {
   const [theme] = useTheme()
