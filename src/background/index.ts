@@ -99,7 +99,11 @@ chrome.runtime.onConnect.addListener((port) => {
   }
 })
 
-chrome.runtime.onMessage.addListener(async function (msg, sender) {
+chrome.runtime.onMessage.addListener(async function (
+  msg,
+  sender,
+  sendResponse
+) {
   if (msg.name == MessageNames.UpdateActionIcon) {
     const { pageEnabled, hostEnabled } = msg.enabledDetails
 
@@ -116,5 +120,6 @@ chrome.runtime.onMessage.addListener(async function (msg, sender) {
     }
   } else if (msg.name === MessageNames.FixChatGPTWebAppAuthState) {
     await chatGPTWebAppClient.fixAuthState()
+    sendResponse()
   }
 })

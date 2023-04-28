@@ -20,7 +20,9 @@ class ProxyFetchRequester implements Requester {
         if (tab.url) {
           return tab.url
         }
-        return chrome.tabs.sendMessage(tab.id!, "url").catch(() => undefined)
+        return chrome.tabs
+          .sendMessage(tab.id!, MessageNames.QueryUrl)
+          .catch(() => undefined)
       })
     )
     for (let i = 0; i < results.length; i++) {
@@ -33,10 +35,12 @@ class ProxyFetchRequester implements Requester {
   waitForProxyTabReady(onReady: (tab: chrome.tabs.Tab) => void) {
     chrome.runtime.onMessage.addListener(async function listener(
       message,
-      sender
+      sender,
+      sendResponse
     ) {
       if (message.name === MessageNames.ProxyTabReady) {
         chrome.runtime.onMessage.removeListener(listener)
+        sendResponse()
         onReady(sender.tab!)
       }
     })

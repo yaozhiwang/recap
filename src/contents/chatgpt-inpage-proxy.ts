@@ -16,11 +16,13 @@ function injectTip() {
 }
 
 async function main() {
-  chrome.runtime.onMessage.addListener(async (message) => {
-    if (message === "url") {
-      return location.href
+  chrome.runtime.onMessage.addListener(
+    async (message, sender, sendResponse) => {
+      if (message === MessageNames.QueryUrl) {
+        sendResponse(location.href)
+      }
     }
-  })
+  )
   if ((window as any).__NEXT_DATA__) {
     await chrome.runtime.sendMessage({ name: MessageNames.ProxyTabReady })
     injectTip()

@@ -6,7 +6,8 @@ export enum MessageNames {
   ProxyResponseMetadata = "proxy-response-metadata",
   ProxyResponseBodyChunk = "proxy-response-body-chunk",
   ProxyTabReady = "proxy-tab-ready",
-  FixChatGPTWebAppAuthState = "fix-chatgpt-webapp-auth-state"
+  FixChatGPTWebAppAuthState = "fix-chatgpt-webapp-auth-state",
+  QueryUrl = "query-url"
 }
 
 export enum PortNames {
