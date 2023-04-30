@@ -61,7 +61,7 @@ export class ChatGPTWebAppProvider extends Provider {
         }
       : () => {}
 
-    let loadingMsg = "connecting to ChatGPT WebApp..."
+    let loadingMsg = "Connecting to ChatGPT WebApp..."
     params.onLoading(loadingMsg)
 
     if (!this.#accessToken) {

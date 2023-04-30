@@ -3,11 +3,11 @@ import { useSiteConfigWithPreview } from "~hooks"
 import { getInnerText, getArticleTitle, getPageTitle } from "~utils/dom"
 import { useArticleContainers } from "./article-container"
 
-interface ArticleContent {
+export interface ArticleContent {
   title: string
   content: string
 }
-interface PageContent {
+export interface PageContent {
   title: string
   articles: ArticleContent[]
 }

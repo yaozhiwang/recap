@@ -1,11 +1,11 @@
 import { Storage } from "@plasmohq/storage"
 import baseCssText from "data-text:~/style.css"
-import type { PlasmoCSConfig, PlasmoGetOverlayAnchor } from "plasmo"
+import { cloneDeep } from "lodash-es"
+import type { PlasmoCSConfig } from "plasmo"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { ResultTextArea } from "~components/contents"
 import ProviderInfo from "~components/provider-info"
 import { ConfigKeys, PanelPosition, Theme, urlNormalize } from "~config"
-import { MessageNames } from "~messaging"
 import { useTheme } from "~hooks"
 import {
   VscChromeClose as CloseIcon,
@@ -17,8 +17,9 @@ import {
   VscLayoutSidebarRightOff as DockRightOffIcon,
   IoRefreshCircleOutline as RerunIcon
 } from "~icons"
+import { MessageNames } from "~messaging"
 import { classNames } from "~utils"
-import { usePageContent } from "./hooks/page-content"
+import { usePageContent, type ArticleContent } from "./hooks/page-content"
 import {
   SummaryContent,
   SummaryStatus,
@@ -40,29 +41,45 @@ export const getStyle = () => {
 // export const getOverlayAnchor: PlasmoGetOverlayAnchor = async () =>
 //   document.body
 
+const enum SummarizePageStatus {
+  Running = "running",
+  Finished = "finished"
+}
+
+interface SummaryListItem {
+  header: string
+  summary: SummaryContent
+}
+interface SummaryList {
+  header: string
+  items: SummaryListItem[]
+}
+
+function newSingleItemSummaryList(
+  summary: SummaryContent,
+  header?: string
+): SummaryList {
+  return { header, items: [{ header: null, summary }] }
+}
+
 const PanelOverlay = () => {
   const [theme] = useTheme()
   const [show, setShow] = useState(false)
   const [position, setPosition] = useState<PanelPosition>()
   const textContent = useRef("")
   const [summarySource, setSummarySource] = useState<"page" | "text">()
-  const [summaryContent, setSummaryContent] = useState<SummaryContent>(null)
+  const [summaryList, setSummaryList] = useState<SummaryList>(null)
 
   const [textSummary, startSummarizeText] = useSummaryContent()
   const textSummaryRef = useRef<SummaryContent>(null)
 
   const [articleSummary, startSummarizeArticle] = useSummaryContent()
-  const [pageSummary, setPageSummary] = useState<SummaryContent[]>([])
-
-  const enum SummarizePageStatus {
-    Running = "running",
-    Finished = "finished"
-  }
 
   const [summarizePageStatus, setSummarizePageStatus] = useState(
     SummarizePageStatus.Finished
   )
   const summarizePageStatusRef = useRef(SummarizePageStatus.Finished)
+  const summarizeArticleIdx = useRef(0)
 
   const {
     enabled,
@@ -128,10 +145,12 @@ const PanelOverlay = () => {
         setShow(true)
         setSummarySource("page")
         if (!enabledRef.current) {
-          setSummaryContent({
-            status: SummaryStatus.Error,
-            data: { message: "Recap is disabled on this page" }
-          })
+          setSummaryList(
+            newSingleItemSummaryList({
+              status: SummaryStatus.Error,
+              data: { message: "Recap is disabled on this page" }
+            })
+          )
           return
         }
 
@@ -150,77 +169,51 @@ const PanelOverlay = () => {
         return
       }
 
-      let text = ""
-      if (pageSummaryHeader) {
-        text += pageSummaryHeader + "\n\n"
+      const newSummaryContent = cloneDeep(summaryList)
+
+      if (!newSummaryContent.header) {
+        newSummaryContent.header = getPageHeader(
+          pageContent.title,
+          pageContent.articles.length
+        )
       }
 
-      if (pageSummaryFinished) {
-        text += pageSummaryFinished + "\n\n"
+      if (newSummaryContent.items.length > summarizeArticleIdx.current) {
+        newSummaryContent.items.pop()
       }
 
-      if (articleSummary) {
-        if (articleSummary.status === SummaryStatus.Generating) {
-          text += getArticleHeader(pageSummary.length)
-          text += articleSummary.data
-        }
-      }
-
-      setSummaryContent({ status: SummaryStatus.Finish, data: text })
-    } else if (summarySource == "text") {
-      setSummaryContent(textSummary)
-    }
-  }, [summarySource, articleSummary, textSummary, pageSummary])
-
-  const pageSummaryHeader = useMemo(() => {
-    if (!pageContent) {
-      return ""
-    }
-
-    let text = ""
-    if (pageContent.articles.length > 1) {
-      if (pageContent.title) {
-        text += "Page Title: " + pageContent.title + "\n"
-      }
-      text += `There are ${pageContent.articles.length} articles in this page.`
-    }
-    return text
-  }, [pageContent])
-
-  const pageSummaryFinished = useMemo(() => {
-    let text = ""
-    text += pageSummary
-      .map((article, idx) => {
-        let articleText = getArticleHeader(idx)
-        if (article.status === SummaryStatus.Finish) {
-          articleText += `Summary: ${article.data}`
-        } else if (article.status === SummaryStatus.Error) {
-          articleText += `Error: ${article.data.message}\n`
-        }
-
-        return articleText
-      })
-      .join("\n\n")
-
-    return text
-  }, [pageSummary])
-
-  useEffect(() => {
-    if (articleSummary) {
       if (isDoneStatus(articleSummary.status)) {
-        const newPageSummary = [...pageSummary]
-        newPageSummary.push(articleSummary)
-        if (newPageSummary.length < pageContent.articles.length) {
+        newSummaryContent.items.push({
+          header: getArticleHeader(
+            pageContent.articles,
+            summarizeArticleIdx.current
+          ),
+          summary: articleSummary
+        })
+        summarizeArticleIdx.current += 1
+
+        if (summarizeArticleIdx.current < pageContent.articles.length) {
           startSummarizeArticle(
-            pageContent.articles[newPageSummary.length].content
+            pageContent.articles[summarizeArticleIdx.current].content
           )
         } else {
           setSummarizePageStatus(SummarizePageStatus.Finished)
         }
-        setPageSummary(newPageSummary)
+      } else {
+        newSummaryContent.items.push({
+          header: getArticleHeader(
+            pageContent.articles,
+            summarizeArticleIdx.current
+          ),
+          summary: articleSummary
+        })
       }
+
+      setSummaryList(newSummaryContent)
+    } else if (summarySource == "text") {
+      setSummaryList(newSingleItemSummaryList(textSummary, textContent.current))
     }
-  }, [articleSummary])
+  }, [summarySource, articleSummary, textSummary])
 
   const isRunning = useMemo(() => {
     if (summarySource === "text") {
@@ -243,21 +236,28 @@ const PanelOverlay = () => {
 
   function summarizePage() {
     if (!pageContentRef.current) {
-      setSummaryContent({
-        status: SummaryStatus.Error,
-        data: {
-          message:
-            "Still working on parsing content, please try rerunning later"
-        }
-      })
+      setSummaryList(
+        newSingleItemSummaryList({
+          status: SummaryStatus.Error,
+          data: {
+            message:
+              "Still working on parsing content, please try rerunning later"
+          }
+        })
+      )
       return
     }
 
     if (pageContentRef.current.articles.length === 0) {
-      setSummaryContent({
-        status: SummaryStatus.Error,
-        data: { message: "No article found in this page.", showBugReport: true }
-      })
+      setSummaryList(
+        newSingleItemSummaryList({
+          status: SummaryStatus.Error,
+          data: {
+            message: "No article found in this page.",
+            showBugReport: true
+          }
+        })
+      )
       return
     }
 
@@ -266,17 +266,29 @@ const PanelOverlay = () => {
       return
     }
     setSummarizePageStatus(SummarizePageStatus.Running)
-    setPageSummary([])
+    setSummaryList({ header: null, items: [] })
+    summarizeArticleIdx.current = 0
     startSummarizeArticle(pageContentRef.current.articles[0].content)
   }
 
-  function getArticleHeader(idx: number) {
+  function getPageHeader(title: string, numArticles: number) {
     let text = ""
-    if (pageContent.articles.length > 1) {
+    if (numArticles > 1) {
+      if (title) {
+        text += "Page Title: " + title + "\n"
+      }
+      text += `There are ${numArticles} articles in this page.`
+    }
+    return text
+  }
+
+  function getArticleHeader(articles: ArticleContent[], idx: number) {
+    let text = ""
+    if (articles.length > 1) {
       text += `Article #${idx + 1}\n`
     }
-    if (pageContent.articles[idx].title) {
-      text += `Title: ${pageContent.articles[idx].title}\n`
+    if (articles[idx].title) {
+      text += `Title: ${articles[idx].title}\n`
     }
     return text
   }
@@ -314,16 +326,12 @@ const PanelOverlay = () => {
                 <CloseIcon className="h-6 w-6" />
               </button>
               <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-row items-center gap-1">
-                <img
-                  src={chrome.runtime.getURL("assets/icon.svg")}
-                  className="h-6 w-6 rounded-lg object-scale-down"
-                />
-                <span className="font-[cursive]">Recap</span>
+                <span className="first-letter:uppercase">{`${summarySource} Summary`}</span>
               </div>
               <div className="flex flex-row items-center gap-2">
                 <button
                   className="cursor-pointer enabled:hover:text-slate-500 disabled:cursor-not-allowed disabled:opacity-50 enabled:dark:hover:text-slate-400"
-                  disabled={!enabled || !summaryContent || isRunning}
+                  disabled={!enabled || !summaryList || isRunning}
                   onClick={(e) => {
                     rerun()
                   }}>
@@ -372,8 +380,24 @@ const PanelOverlay = () => {
                 </div>
               </div>
             </div>
-            <div className="absolute top-[56] bottom-[32] w-full">
-              <ResultTextArea content={summaryContent} />
+            <div className="absolute top-[56] bottom-[32] w-full overflow-scroll">
+              {summaryList.header && (
+                <div
+                  className={classNames(
+                    "w-full whitespace-pre-wrap bg-neutral-200 px-2 py-2 dark:bg-neutral-800",
+                    summarySource === "text" ? "line-clamp-3" : ""
+                  )}>
+                  {summaryList.header}
+                </div>
+              )}
+              {summaryList.items.map((item, id) => (
+                <div key={id}>
+                  <div className="w-full whitespace-pre-wrap bg-neutral-200 px-2 py-2 dark:bg-neutral-800">
+                    {item.header}
+                  </div>
+                  <ResultTextArea content={item.summary} />
+                </div>
+              ))}
             </div>
             <div className="absolute bottom-0 w-full">
               <ProviderInfo />

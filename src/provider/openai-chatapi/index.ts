@@ -31,7 +31,7 @@ export class OpenAIChatProvider extends Provider {
       )
     }
 
-    params.onLoading("connecting to OpenAI...")
+    params.onLoading("Connecting to OpenAI...")
     try {
       const resp = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
