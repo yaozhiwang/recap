@@ -185,7 +185,7 @@ const PassageInline = (props: { anchor: PlasmoCSUIAnchor }) => {
             <div
               className={classNames(
                 isRunningStatus(summaryContent?.status) ? "cursor-wait" : "",
-                "text-sm"
+                "p-2 text-base"
               )}>
               <ResultTextArea content={summaryContent} />
             </div>

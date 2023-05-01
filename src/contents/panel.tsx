@@ -59,7 +59,7 @@ function newSingleItemSummaryList(
   summary: SummaryContent,
   header?: string
 ): SummaryList {
-  return { header, items: [{ header: null, summary }] }
+  return { header: null, items: [{ header, summary }] }
 }
 
 const PanelOverlay = () => {
@@ -140,7 +140,7 @@ const PanelOverlay = () => {
           return
         }
         textContent.current = msg?.text
-        startSummarizeText(textContent.current)
+        summarizeText()
       } else if (msg?.name === MessageNames.SummarizePage) {
         setShow(true)
         setSummarySource("page")
@@ -211,7 +211,12 @@ const PanelOverlay = () => {
 
       setSummaryList(newSummaryContent)
     } else if (summarySource == "text") {
-      setSummaryList(newSingleItemSummaryList(textSummary, textContent.current))
+      setSummaryList(
+        newSingleItemSummaryList(
+          textSummary,
+          getTextHeader(textContent.current)
+        )
+      )
     }
   }, [summarySource, articleSummary, textSummary])
 
@@ -226,7 +231,7 @@ const PanelOverlay = () => {
 
   function rerun() {
     if (summarySource === "text") {
-      startSummarizeText(textContent.current)
+      summarizeText()
     }
 
     if (summarySource === "page") {
@@ -291,6 +296,18 @@ const PanelOverlay = () => {
       text += `Title: ${articles[idx].title}\n`
     }
     return text
+  }
+
+  function summarizeText() {
+    setSummaryList({
+      header: getTextHeader(textContent.current),
+      items: []
+    })
+    startSummarizeText(textContent.current)
+  }
+
+  function getTextHeader(content: string) {
+    return `Content: ${content}`
   }
 
   return (
@@ -380,22 +397,27 @@ const PanelOverlay = () => {
                 </div>
               </div>
             </div>
-            <div className="absolute top-[56] bottom-[32] w-full overflow-scroll">
+            <div className="absolute top-[56] bottom-[32] w-full overflow-scroll p-1">
               {summaryList.header && (
-                <div
-                  className={classNames(
-                    "w-full whitespace-pre-wrap bg-neutral-200 px-2 py-2 dark:bg-neutral-800",
-                    summarySource === "text" ? "line-clamp-3" : ""
-                  )}>
+                <div className="whitespace-pre-wrap rounded-lg bg-neutral-200 px-2 py-2 text-lg dark:bg-neutral-800">
                   {summaryList.header}
                 </div>
               )}
               {summaryList.items.map((item, id) => (
-                <div key={id}>
-                  <div className="w-full whitespace-pre-wrap bg-neutral-200 px-2 py-2 dark:bg-neutral-800">
-                    {item.header}
+                <div
+                  key={id}
+                  className="mt-1 overflow-hidden rounded-t-xl rounded-b-md border border-neutral-200 dark:border-neutral-800">
+                  <div className="whitespace-pre-wrap bg-neutral-200 px-2 py-2 text-lg dark:bg-neutral-800">
+                    <div
+                      className={classNames(
+                        summarySource === "text" ? "line-clamp-3" : ""
+                      )}>
+                      {item.header}
+                    </div>
                   </div>
-                  <ResultTextArea content={item.summary} />
+                  <div className="p-2 text-base">
+                    <ResultTextArea content={item.summary} />
+                  </div>
                 </div>
               ))}
             </div>

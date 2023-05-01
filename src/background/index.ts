@@ -82,7 +82,8 @@ chrome.runtime.onConnect.addListener((port) => {
         port.postMessage({
           error: {
             code: "empty_content",
-            message: "the content sent to summarize is empty"
+            message: "the content sent to summarize is empty",
+            showBugReport: true
           }
         })
         return

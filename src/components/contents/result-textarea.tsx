@@ -33,7 +33,7 @@ export default function ResultTextArea(props: { content: SummaryContent }) {
 
   if (content?.status == SummaryStatus.Loading) {
     return (
-      <div className="p-6 text-center">
+      <div className="text-center">
         <div role="status">
           <svg
             aria-hidden="true"
@@ -61,7 +61,7 @@ export default function ResultTextArea(props: { content: SummaryContent }) {
       content.data.code === ProviderErrorCode.CHATGPT_UNAUTHORIZED
     ) {
       return (
-        <div className="p-6 text-red-500">
+        <div className="text-red-500">
           You have to pass Cloudflare check. Please retry after
           <div className="mt-2 flex items-center gap-4">
             <button
@@ -82,10 +82,10 @@ export default function ResultTextArea(props: { content: SummaryContent }) {
       )
     }
     return (
-      <div className="p-6 text-red-500">
+      <div className="text-red-500">
         <p>{content.data.message}</p>
         {content.data.showBugReport && (
-          <p className="mt-2 block text-xs italic">
+          <p className="block text-xs italic">
             If you believe this is not correct, please{" "}
             <a
               className="underline"
@@ -100,11 +100,11 @@ export default function ResultTextArea(props: { content: SummaryContent }) {
     )
   }
   return (
-    <div className="group relative h-full overflow-hidden ">
+    <div className="group relative min-h-[36] overflow-hidden">
       <div
         className={classNames(
           copied ? "visible" : "invisible group-hover:visible",
-          "absolute top-2 right-2"
+          "absolute top-0 right-0"
         )}>
         {!!content?.data && (
           <CopyToClipboard
@@ -129,7 +129,7 @@ export default function ResultTextArea(props: { content: SummaryContent }) {
         )}
       </div>
 
-      <div className="h-full overflow-y-scroll px-4 py-6">
+      <div className="overflow-y-scroll">
         <ReactMarkdown
           rehypePlugins={[[rehypeHighlight, { detect: true }]]}
           className="whitespace-pre-wrap">
