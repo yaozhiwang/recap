@@ -72,7 +72,7 @@ function IndexOptions() {
             Recap (v{getExtensionVersion()})
           </span>
           <a
-            href="https://chrome.google.com/webstore/detail/recap-smart-split-and-sum/fegolfhddfkibejadoipedlgcapbncml"
+            href="https://recapext.xyz/chrome?utm_source=options"
             target="_blank"
             rel="noreferrer">
             <span className="flex text-amber-400">

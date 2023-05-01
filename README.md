@@ -17,7 +17,7 @@ Summarize the text you are interested in.
 [release-image]: https://img.shields.io/github/v/release/yaozhiwang/recap?color=blue
 [release-url]: https://github.com/yaozhiwang/recap/releases/latest
 [chrome-image]: https://img.shields.io/badge/-Chrome-brightgreen?style=for-the-badge&logo=google-chrome&logoColor=white
-[chrome-url]: https://chrome.google.com/webstore/detail/recap-smart-split-and-sum/fegolfhddfkibejadoipedlgcapbncml
+[chrome-url]: https://recapext.xyz/chrome?utm_source=github
 [manual-image]: https://img.shields.io/badge/-Manual-lightgrey?style=for-the-badge
 [manual-url]: #manual-installation
 
