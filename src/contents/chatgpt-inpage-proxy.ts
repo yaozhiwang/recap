@@ -1,5 +1,10 @@
+import type { PlasmoCSConfig } from "plasmo"
 import { MessageNames } from "~messaging"
 import { setupProxyExecutor } from "~utils/proxy-fetch"
+
+export const config: PlasmoCSConfig = {
+  matches: ["https://chat.openai.com/*"]
+}
 
 function injectTip() {
   const div = document.createElement("div")
@@ -31,5 +36,3 @@ async function main() {
 
 setupProxyExecutor()
 main().catch(console.error)
-
-export {}
