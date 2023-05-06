@@ -218,22 +218,4 @@ function ToggleButton(props: {
   )
 }
 
-export const render: PlasmoRender = async (
-  {
-    anchor, // the observed anchor, OR document.body.
-    createRootContainer // This creates the default root container
-  },
-  InlineCSUIContainer
-) => {
-  const rootContainer = await createRootContainer(anchor)
-
-  const root = createRoot(rootContainer) // Any root
-  root.render(
-    // @ts-ignore
-    <InlineCSUIContainer>
-      <PassageInline anchor={anchor} />
-    </InlineCSUIContainer>
-  )
-}
-
 export default PassageInline
