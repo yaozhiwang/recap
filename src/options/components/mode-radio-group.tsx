@@ -8,12 +8,12 @@ const options = [
   {
     id: Mode.Active,
     name: "Active",
-    description: "Enable Recap by default, disable particular domains mamually"
+    description: "Enable Recap by default, disable particular domains manually"
   },
   {
     id: Mode.Passive,
     name: "Passive",
-    description: "Disable Recap by default, enable particular domains mamually"
+    description: "Disable Recap by default, enable particular domains manually"
   }
 ]
 
