@@ -61,3 +61,46 @@ Reacp is a browser extension to summarize text on webpage with ChatGPT. It split
 2. Install dependencies with `pnpm`
 3. `pnpm run build`
 4. Load `build/chrome-mv3-prod` directory to your browser
+
+## Roadmap
+
+Please feel free to submit any feature requests or suggestions by [opening an issue](https://github.com/yaozhiwang/recap/issues/new).
+
+### Major Milestones
+
+- [ ] Site adapter
+  - [ ] Stackoverflow
+  - [ ] Github
+  - [ ] Reddit
+  - [ ] Quora
+  - [ ] Youtube
+- [ ] Link preview
+  - [ ] Twitter
+  - [ ] Google
+  - [ ] Hacker News
+
+### Incremental Improvements
+
+- [ ] Add prompt help in settings
+- [ ] Add Changelog
+- [ ] Long text summarization
+- [ ] Performance optimization
+  - [ ] Remove Plasmo CSUI (it causes certain websites to freeze)
+  - [ ] Remove React <!-- https://github.com/parcel-bundler/parcel/issues/3305 -->
+- [ ] Support more browsers
+- [ ] Encourage users to leave a review on the web store.
+- [ ] Support more AI models
+- [ ] Github actions for releasing
+- [ ] UI improvements
+  - [ ] i18n
+  - [ ] Handle root font size
+  - [ ] AUTO theme detect
+  - [ ] Copy-to-clipboard button in panel headers
+  - [ ] Stop generating button
+  - [ ] Toast in panel
+  - [ ] Summarize page button for page title instead of passage button
+  - [ ] Add blinking ... at tail of text while generating
+
+### Experimental Feature
+
+- [ ] Give Me the Answer (directly show the most relevant answer on stackoverflow)
