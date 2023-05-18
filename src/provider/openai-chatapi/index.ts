@@ -6,11 +6,12 @@ import {
 } from "~provider/errors"
 import { Provider, type SummarizeParams } from ".."
 import { parseSSEResponse } from "~utils/sse"
+import { Prompt } from "~config"
 
 export class OpenAIChatProvider extends Provider {
   #config: OpenAIProviderConfig
 
-  constructor(prompt: string, config: OpenAIProviderConfig) {
+  constructor(prompt: Prompt, config: OpenAIProviderConfig) {
     super(prompt)
     this.#config = config
   }

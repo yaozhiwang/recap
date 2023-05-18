@@ -9,6 +9,8 @@ export default function SavableInput(props: {
   min?: number
   defaultValue?: number | string
   onChange: (val: string) => void
+  onEdit?: (isEditing: boolean) => void
+  value?: number | string
 }) {
   const [editable, setEditable] = useState(false)
   const [valid, setValid] = useState(true)
@@ -21,7 +23,13 @@ export default function SavableInput(props: {
       ref.current.value = ""
       ref.current.value = val
     }
-  }, [editable])
+
+    props.onEdit && props.onEdit(editable)
+
+    if (!editable && props.value !== null && props.value !== undefined) {
+      ref.current.value = props.value
+    }
+  }, [editable, props.value])
 
   return (
     <div className="w-full">
@@ -36,7 +44,7 @@ export default function SavableInput(props: {
               ? "border-indigo-500 ring-indigo-500 focus:border-indigo-500 focus:ring-indigo-500"
               : "border-red-500 ring-red-600 focus:border-red-500 focus:ring-red-600",
             props.type === "number" ? "w-[120]" : "w-full",
-            "block rounded-md bg-neutral-100 text-black shadow-sm placeholder:text-neutral-300",
+            "block rounded-md bg-neutral-100 pr-14 text-sm text-black shadow-sm placeholder:text-neutral-300",
             "disabled:cursor-not-allowed disabled:border-neutral-200 disabled:bg-white disabled:ring-0",
             "dark:bg-neutral-700 dark:text-white dark:placeholder:text-neutral-500 disabled:dark:border-neutral-500 dark:disabled:bg-neutral-900"
           )}

@@ -1,3 +1,4 @@
+import { getPromptText, Prompt } from "~config"
 import { ProviderError, ProviderErrorCode } from "./errors"
 
 export interface SummarizeParams {
@@ -9,9 +10,9 @@ export interface SummarizeParams {
 }
 
 export abstract class Provider {
-  #prompt: string
-  constructor(prompt = "Summarize this text:") {
-    this.#prompt = prompt.trim()
+  #prompt: Prompt
+  constructor(prompt: Prompt) {
+    this.#prompt = prompt
   }
 
   async summarize(
@@ -19,7 +20,8 @@ export abstract class Provider {
     params: SummarizeParams
   ): Promise<{ cleanup?: () => void }> {
     try {
-      return await this.doSummarize(`${this.#prompt}\n\n${text}`, params)
+      this.#prompt.params.content = text.trim()
+      return await this.doSummarize(getPromptText(this.#prompt), params)
     } catch (err) {
       console.error(err, JSON.stringify(err))
       if (err instanceof ProviderError) {

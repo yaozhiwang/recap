@@ -17,6 +17,7 @@ import {
 } from "./components"
 import "./options.css"
 import { AiFillStar } from "~icons"
+import PromptInput from "./components/prompt-input"
 
 function IndexOptions() {
   const [theme, configTheme, setTheme] = useTheme()
@@ -29,7 +30,6 @@ function IndexOptions() {
     ConfigKeys.excludeContainers
   )
   const [headingAnchor, setHeadingAnchor] = useStorage(ConfigKeys.headingAnchor)
-  const [prompt, setPrompt] = useStorage(ConfigKeys.prompt)
 
   useEffect(() => {
     if (theme == Theme.Dark) {
@@ -232,11 +232,7 @@ function IndexOptions() {
               </p>
             </div>
             <div id="prompt">
-              <SavableInput
-                type="text"
-                defaultValue={prompt}
-                onChange={setPrompt}
-              />
+              <PromptInput />
             </div>
           </div>
 

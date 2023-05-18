@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid"
+import { Prompt } from "~config"
 import type { ChatGPTWebAppProviderConfig } from "~config/provider"
 import {
   ProviderBackendError,
@@ -20,7 +21,7 @@ export class ChatGPTWebAppProvider extends Provider {
   #conversationContext?: ConversationContext
   #cachedModelNames?: string[]
 
-  constructor(prompt: string, config: ChatGPTWebAppProviderConfig) {
+  constructor(prompt: Prompt, config: ChatGPTWebAppProviderConfig) {
     super(prompt)
     this.#config = config
   }

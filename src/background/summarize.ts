@@ -5,7 +5,8 @@ import {
   type OpenAIProviderConfig,
   ProviderType,
   getProviderConfigKey,
-  providerTypeConfigKey
+  providerTypeConfigKey,
+  Prompt
 } from "~/config"
 import type { Provider } from "~/provider"
 import { ChatGPTWebAppProvider } from "~provider/chatgpt-webapp"
@@ -16,7 +17,7 @@ export async function summarize(port: chrome.runtime.Port, text: string) {
   const providerType = await storage.get<ProviderType>(providerTypeConfigKey)
 
   const configKey = getProviderConfigKey(providerType)
-  const prompt = await new Storage().get(ConfigKeys.prompt)
+  const prompt = await new Storage().get<Prompt>(ConfigKeys.prompt)
 
   let provider: Provider
   if (providerType === ProviderType.ChatGPTWebApp) {

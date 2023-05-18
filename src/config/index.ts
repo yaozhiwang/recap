@@ -51,6 +51,94 @@ export enum ConfigKeys {
   prompt = "config.prompt"
 }
 
+export type Prompt = {
+  template: string
+  params: { [k: string]: string }
+}
+
+const outlineFormText = ", in outline form"
+export const defaultPrompt: Prompt = {
+  template: "Summarize this text in {language}{outlineForm}: {content}",
+  params: {
+    language: "the same language used in the text",
+    outlineForm: ""
+  }
+}
+const defaultPromptRegexp = new RegExp(
+  `Summarize this text in (.+)(${defaultPrompt.params.outlineForm})?: {content}`
+)
+
+export function getPromptText(prompt: Prompt) {
+  if (!prompt) {
+    return ""
+  }
+  if (!prompt.params) {
+    return prompt.template ?? ""
+  }
+
+  let out = prompt.template
+  for (const param of Object.keys(prompt.params)) {
+    out = out.replace(`{${param}}`, prompt.params[param])
+  }
+
+  return out
+}
+
+export function getDefaultPrompt({
+  prompt,
+  language,
+  outlineForm
+}: {
+  prompt: Prompt
+  language?: string
+  outlineForm?: boolean
+}) {
+  const out = { ...prompt }
+  out.params = { ...prompt.params }
+  if (language !== undefined && language !== null) {
+    if (language) {
+      out.params.language = language
+    } else {
+      out.params.language = defaultPrompt.params.language
+    }
+  }
+  if (outlineForm !== undefined && outlineForm !== null) {
+    if (outlineForm) {
+      out.params.outlineForm = outlineFormText
+    } else {
+      out.params.outlineForm = ""
+    }
+  }
+
+  return out
+}
+
+export function hasOutlineForm(prompt: string) {
+  return prompt && prompt.includes(outlineFormText)
+}
+
+export function parseDefaultPrompt(text: string): [boolean, Prompt] {
+  if (!text) {
+    return [false, undefined]
+  }
+
+  const matches = text.match(defaultPromptRegexp)
+  if (!matches) {
+    return [false, undefined]
+  }
+
+  return [
+    true,
+    {
+      template: defaultPrompt.template,
+      params: {
+        language: matches[1],
+        outlineForm: matches[2] ? outlineFormText : ""
+      }
+    }
+  ]
+}
+
 const defaultConfigs = {
   [ConfigKeys.mode]: Mode.Active,
   [ConfigKeys.articleContainers]: [
@@ -64,11 +152,11 @@ const defaultConfigs = {
   [ConfigKeys.theme]: Theme.System,
   [ConfigKeys.minWords]: 0,
   [ConfigKeys.panelPosition]: PanelPosition.Right,
-  [ConfigKeys.prompt]: "Summarize this text:"
+  [ConfigKeys.prompt]: defaultPrompt
 }
 
-export * from "./site"
 export * from "./provider"
+export * from "./site"
 
 import { saveDefaultProviderConfigs } from "./provider"
 import { saveDefaultSiteConfigs } from "./site"
