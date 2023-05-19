@@ -17,5 +17,6 @@ module.exports = {
   pluginSearchDirs: false,
   importOrder: ["^@plasmohq/(.*)$", "^~(.*)$", "^[./]"],
   importOrderSeparation: true,
-  importOrderSortSpecifiers: true
+  importOrderSortSpecifiers: true,
+  tailwindFunctions: ["classNames"]
 }

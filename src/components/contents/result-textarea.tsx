@@ -129,7 +129,7 @@ export default function ResultTextArea(props: { content: SummaryContent }) {
         )}
       </div>
 
-      <div className="overflow-y-scroll prose lg:prose-xl dark:prose-invert prose-neutral">
+      <div className="prose prose-neutral overflow-y-scroll dark:prose-invert">
         <ReactMarkdown
           rehypePlugins={[[rehypeHighlight, { detect: true }]]}
           children={content?.data}
