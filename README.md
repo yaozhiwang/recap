@@ -66,7 +66,8 @@ Reacp is a browser extension to summarize text on webpage with ChatGPT. It split
 
 Please feel free to submit any feature requests or suggestions by [opening an issue](https://github.com/yaozhiwang/recap/issues/new).
 
-### Major Milestones
+<details>
+<summary>Major Milestones</summary>
 
 - [ ] Site adapter
   - [ ] Stackoverflow
@@ -79,9 +80,12 @@ Please feel free to submit any feature requests or suggestions by [opening an is
   - [ ] Google
   - [ ] Hacker News
 
-### Incremental Improvements
+</details>
 
-- [ ] Add prompt help in settings
+<details>
+<summary>Incremental Improvements</summary>
+
+- [x] Add prompt help in settings
 - [ ] Add Changelog
 - [ ] Long text summarization
 - [ ] Performance optimization
@@ -101,6 +105,11 @@ Please feel free to submit any feature requests or suggestions by [opening an is
   - [ ] Summarize page button for page title instead of passage button
   - [ ] Add blinking ... at tail of text while generating
 
-### Experimental Feature
+</details>
+
+<details>
+<summary>Experimental Feature</summary>
 
 - [ ] Give Me the Answer (directly show the most relevant answer on stackoverflow)
+
+</details>
