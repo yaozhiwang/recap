@@ -6,6 +6,7 @@ export default function SavableInput(props: {
   type: string
   placeholder?: string
   errorText?: string
+  validate?: (value: string) => boolean
   min?: number
   defaultValue?: number | string
   onChange: (val: string) => void
@@ -56,6 +57,11 @@ export default function SavableInput(props: {
           placeholder={editable ? props.placeholder : ""}
           onInput={(e) => {
             const elem = e.target as HTMLInputElement
+            if (props.validate) {
+              setValid(props.validate(elem.value))
+              return
+            }
+
             if (props.type === "number") {
               if (elem.value === "" || /[^0-9]+/.test(elem.value)) {
                 setValid(false)

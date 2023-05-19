@@ -1,5 +1,6 @@
 import { Storage } from "@plasmohq/storage"
 import {
+  migrateDefaultConfigs,
   saveDefaultConfigs,
   toggleEnableHost,
   toggleEnablePage
@@ -18,6 +19,8 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
     await new Storage({ area: "local" }).set(isFirstCacheKey, true)
     chrome.runtime.openOptionsPage()
+  } else if (details.reason === chrome.runtime.OnInstalledReason.UPDATE) {
+    await migrateDefaultConfigs(details.previousVersion)
   }
 })
 

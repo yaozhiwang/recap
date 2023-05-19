@@ -9,7 +9,7 @@ import {
   parseDefaultPrompt,
   Prompt
 } from "~config"
-import { HiOutlineCheckCircle, MdSettingsBackupRestore } from "~icons"
+import { HiOutlineCheckCircle, HiOutlineLightBulb, MdSettingsBackupRestore } from "~icons"
 import SavableInput from "./savable-input"
 
 export default function PromptInput() {
@@ -35,6 +35,7 @@ export default function PromptInput() {
 
   const onChangeLanguage = (language: string) => {
     setPrompt(getDefaultPrompt({ prompt, language }))
+    setLanguage("")
   }
 
   const onChangeOutline = (checked: boolean) => {
@@ -59,6 +60,10 @@ export default function PromptInput() {
           onChange={onEditPromptText}
           onEdit={setIsEditing}
           value={promptText}
+          validate={(text) => {
+            return text.includes("{content}")
+          }}
+          errorText={"Prompt must includes '{content}'"}
         />
       </div>
       {!isEditing && (
@@ -92,7 +97,7 @@ export default function PromptInput() {
                     type="text"
                     placeholder="Not Specified"
                     className="w-28 rounded-md bg-neutral-100 px-2 py-1 text-sm
-                  placeholder:text-neutral-300 dark:bg-neutral-700 dark:placeholder:text-neutral-500"
+                      placeholder:text-neutral-300 dark:bg-neutral-700 dark:placeholder:text-neutral-500"
                     value={language}
                     onChange={(e) => {
                       setLanguage(e.target.value)
@@ -106,6 +111,10 @@ export default function PromptInput() {
                   }}>
                   <HiOutlineCheckCircle className="h-5 w-5" />
                 </button>
+                <div className="inline-flex flex-row text-xs font-light text-neutral-500 items-center gap-1 ml-3">
+                  <HiOutlineLightBulb className="h-5 w-5 inline" />
+                  You can replace the entire prompt with your own language.
+                </div>
               </div>
               <div className="flex flex-row items-center">
                 <label className="relative inline-flex cursor-pointer items-center">

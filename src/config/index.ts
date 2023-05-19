@@ -172,3 +172,19 @@ export async function saveDefaultConfigs() {
   await saveDefaultProviderConfigs()
   await saveDefaultSiteConfigs()
 }
+
+export async function migrateDefaultConfigs(previousVersion: string) {
+  const storage = new Storage()
+
+  const prompt = await storage.get(ConfigKeys.prompt)
+  if (typeof prompt === "string") {
+    if (!prompt || prompt === "Summarize this text:") {
+      await storage.set(ConfigKeys.prompt, defaultPrompt)
+    } else {
+      await storage.set(ConfigKeys.prompt, {
+        template: prompt + "{content}",
+        params: { language: "", outlineForm: "" },
+      })
+    }
+  }
+}

@@ -228,7 +228,7 @@ function IndexOptions() {
                 Prompt
               </label>
               <p className="text-sm text-neutral-500">
-                These words will be prepended to the text sent to AI provider
+                The specitial tag {"{content}"} will be replaced with the text on webpage.
               </p>
             </div>
             <div id="prompt">
