@@ -104,7 +104,7 @@ export default function ResultTextArea(props: { content: SummaryContent }) {
       <div
         className={classNames(
           copied ? "visible" : "invisible group-hover:visible",
-          "absolute top-0 right-0"
+          "absolute right-0 top-0"
         )}>
         {!!content?.data && (
           <CopyToClipboard
@@ -129,15 +129,11 @@ export default function ResultTextArea(props: { content: SummaryContent }) {
         )}
       </div>
 
-      <div className="overflow-y-scroll">
+      <div className="overflow-y-scroll prose lg:prose-xl dark:prose-invert prose-neutral">
         <ReactMarkdown
           rehypePlugins={[[rehypeHighlight, { detect: true }]]}
-          className="whitespace-pre-wrap">
-          {
-            // change newline to display https://github.com/remarkjs/react-markdown/issues/273
-            content?.data
-          }
-        </ReactMarkdown>
+          children={content?.data}
+        />
       </div>
     </div>
   )

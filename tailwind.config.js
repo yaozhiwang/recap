@@ -3,7 +3,5 @@ module.exports = {
   mode: "jit",
   darkMode: "class",
   content: ["./**/*.tsx"],
-  plugins: [
-    require("@tailwindcss/forms"),
-  ]
+  plugins: [require("@tailwindcss/typography"), require("@tailwindcss/forms")]
 }

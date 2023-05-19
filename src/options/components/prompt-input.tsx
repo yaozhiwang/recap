@@ -100,7 +100,7 @@ export default function PromptInput() {
                   />
                 </label>
                 <button
-                  className="text-indigo-400 hover:text-indigo-600 dark:text-indigo-400 dark:hover:text-indigo-600"
+                  className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-600"
                   onClick={() => {
                     onChangeLanguage(language)
                   }}>
