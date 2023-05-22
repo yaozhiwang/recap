@@ -85,8 +85,8 @@ Please feel free to submit any feature requests or suggestions by [opening an is
 <details>
 <summary>Incremental Improvements</summary>
 
-- [x] Add prompt help in settings
-- [ ] Add Changelog
+- [x] Add prompt help in settings [v1.2.4]
+- [x] Add Changelog
 - [ ] Long text summarization
 - [ ] Performance optimization
   - [ ] Remove Plasmo CSUI (it causes certain websites to freeze)
