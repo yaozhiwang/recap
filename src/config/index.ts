@@ -158,7 +158,10 @@ const defaultConfigs = {
 export * from "./provider"
 export * from "./site"
 
-import { saveDefaultProviderConfigs } from "./provider"
+import {
+  migrateDefaultProviderConfigs,
+  saveDefaultProviderConfigs
+} from "./provider"
 import { saveDefaultSiteConfigs } from "./site"
 export async function saveDefaultConfigs() {
   const storage = new Storage()
@@ -183,8 +186,10 @@ export async function migrateDefaultConfigs(previousVersion: string) {
     } else {
       await storage.set(ConfigKeys.prompt, {
         template: prompt + "{content}",
-        params: { language: "", outlineForm: "" },
+        params: { language: "", outlineForm: "" }
       })
     }
   }
+
+  await migrateDefaultProviderConfigs(previousVersion)
 }

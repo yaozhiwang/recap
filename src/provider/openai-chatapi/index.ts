@@ -34,7 +34,7 @@ export class OpenAIChatProvider extends Provider {
 
     params.onLoading("Connecting to OpenAI...")
     try {
-      const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+      const resp = await fetch(`${this.#config.apiHost}/v1/chat/completions`, {
         method: "POST",
         signal: params.signal,
         headers: {
@@ -52,7 +52,7 @@ export class OpenAIChatProvider extends Provider {
       }).catch((err) => {
         if (err instanceof TypeError) {
           throw new ProviderError(
-            "Network error, please check your network.",
+            "Network error, please check your network or API host setting.",
             ProviderErrorCode.NETWORK_ERROR
           )
         } else {

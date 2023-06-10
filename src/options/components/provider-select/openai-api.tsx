@@ -1,5 +1,6 @@
 import { useStorage } from "@plasmohq/storage/hook"
 import {
+  defaulOpenaiAPIHost,
   getProviderConfigKey,
   OpenAIProviderConfig,
   ProviderType
@@ -35,6 +36,21 @@ export default function OpenAIAPIProvider() {
               defaultValue={config.apiKey}
               onChange={(newKey) => {
                 setConfig({ ...config, apiKey: newKey })
+              }}
+            />
+          </div>
+          <div>
+            <label htmlFor="api-host" className="block text-lg font-medium">
+              API Host
+            </label>
+          </div>
+          <div id="api-host">
+            <SavableInput
+              type="text"
+              placeholder={defaulOpenaiAPIHost}
+              defaultValue={config.apiHost}
+              onChange={(newHost) => {
+                setConfig({ ...config, apiHost: newHost })
               }}
             />
           </div>
