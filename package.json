@@ -1,7 +1,7 @@
 {
   "name": "recap",
   "displayName": "Recap: Smart Split and Summarize with ChatGPT",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "Summarize the text you are interested in",
   "author": "Yaozhi Wang",
   "scripts": {
