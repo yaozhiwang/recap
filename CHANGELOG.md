@@ -1,10 +1,16 @@
 # Changelog
 
+## [v1.2.6] - 2023-06-14
+
+### Added
+
+- Support choosing OpenAI API model
+
 ## [v1.2.5] - 2023-06-10
 
 ### Added
 
-- Support OpenAI API host
+- Support custom OpenAI API host
 
 ## [v1.2.4] - 2023-05-20
 

@@ -40,7 +40,7 @@ Reacp is a browser extension to summarize text on webpage with ChatGPT. It split
 - Recap previous content before a passage
 - Summarize user selected text
 - Support ChatGPT
-- Support official OpenAI API
+- Support official OpenAI API, with custom API host and API model
 - Custom prompt
 - Toggle enable/disable for individual domain or page
 - Support user configuration for different sites
