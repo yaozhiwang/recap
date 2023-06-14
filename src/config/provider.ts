@@ -24,14 +24,14 @@ export interface OpenAIProviderConfig {
   top_p: number
 }
 
-export const defaulOpenaiAPIHost = "https://api.openai.com"
+export const defaultOpenaiAPIHost = "https://api.openai.com"
 export const providerTypeConfigKey = "provider"
 const defaultProviderConfig = {
   [providerTypeConfigKey]: ProviderType.ChatGPTWebApp,
   [getProviderConfigKey(ProviderType.ChatGPTWebApp)]: { cleanup: true },
   [getProviderConfigKey(ProviderType.OpenaiChatApi)]: {
     apiKey: "",
-    apiHost: defaulOpenaiAPIHost,
+    apiHost: defaultOpenaiAPIHost,
     model: "gpt-3.5-turbo",
     max_tokens: 4096,
     temperature: 0.8,
@@ -55,7 +55,7 @@ export async function migrateDefaultProviderConfigs(previousVersion: string) {
   const configKey = getProviderConfigKey(ProviderType.OpenaiChatApi)
   const config = await storage.get<OpenAIProviderConfig>(configKey)
   if (config.apiHost === undefined) {
-    await storage.set(configKey, { ...config, apiHost: defaulOpenaiAPIHost })
+    await storage.set(configKey, { ...config, apiHost: defaultOpenaiAPIHost })
   }
 }
 
