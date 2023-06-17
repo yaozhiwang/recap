@@ -61,7 +61,7 @@ export default function OpenAIAPIProvider() {
             </label>
           </div>
           <div id="api-model">
-            <ModelSelect />
+            <ModelSelect providerType={ProviderType.OpenaiChatApi} />
           </div>
         </div>
       ) : null}

@@ -90,7 +90,7 @@ class ChatGPTWebAppClient {
     return resp
   }
 
-  async getModels(
+  async fetchModels(
     token: string
   ): Promise<
     { slug: string; title: string; description: string; max_tokens: number }[]

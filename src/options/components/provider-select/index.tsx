@@ -2,8 +2,8 @@ import { RadioGroup } from "@headlessui/react"
 import { useStorage } from "@plasmohq/storage/hook"
 import {
   ProviderType,
-  ProviderTypeName,
-  providerTypeConfigKey
+  providerTypeConfigKey,
+  ProviderTypeName
 } from "~config/provider"
 import { classNames } from "~utils"
 import ChatGPTWebAppProvider from "./chatgpt-webapp"
@@ -37,7 +37,7 @@ export default function ProviderSelect() {
                   checked
                     ? "border-0 bg-indigo-600 text-white hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600"
                     : "border border-neutral-200 hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-800",
-                  "flex flex-1 cursor-pointer select-none items-center justify-center whitespace-nowrap rounded-md  py-4 px-3 text-sm font-medium"
+                  "flex flex-1 cursor-pointer select-none items-center justify-center whitespace-nowrap rounded-md  px-3 py-4 text-sm font-medium"
                 )
               }>
               <RadioGroup.Label as="span">{option.name}</RadioGroup.Label>

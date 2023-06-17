@@ -1,18 +1,18 @@
+import { isEmpty } from "lodash-es"
 import type { OpenAIProviderConfig } from "~/config/provider"
 import {
   ProviderBackendError,
   ProviderError,
   ProviderErrorCode
 } from "~provider/errors"
-import { Provider, type SummarizeParams } from ".."
 import { parseSSEResponse } from "~utils/sse"
-import { Prompt } from "~config"
+import { Provider, type SummarizeParams } from ".."
 
 export class OpenAIChatProvider extends Provider {
   #config: OpenAIProviderConfig
 
-  constructor(prompt: Prompt, config: OpenAIProviderConfig) {
-    super(prompt)
+  constructor(config: OpenAIProviderConfig) {
+    super()
     this.#config = config
   }
 
@@ -92,5 +92,38 @@ export class OpenAIChatProvider extends Provider {
       }
     }
     return {}
+  }
+
+  async fetchModels(): Promise<string[]> {
+    const resp = await fetch(`${this.#config.apiHost}/v1/models`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${this.#config.apiKey}`
+      }
+    })
+    if (!resp.ok) {
+      const error = await resp.json().catch(() => ({}))
+      if (isEmpty(error)) {
+        throw new ProviderError(
+          `${resp.status} ${resp.statusText}`,
+          ProviderErrorCode.REQUEST_ERROR
+        )
+      } else {
+        throw new ProviderBackendError(error)
+      }
+    }
+    const data = await resp.json().catch(() => {})
+
+    // https://platform.openai.com/docs/models/model-endpoint-compatibility
+    const chatModels = []
+    for (const model of data.data) {
+      if (
+        model.id.startsWith("gpt-3.5-turbo") ||
+        model.id.startsWith("gpt-4")
+      ) {
+        chatModels.push(model.id)
+      }
+    }
+    return chatModels
   }
 }

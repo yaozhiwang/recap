@@ -10,18 +10,14 @@ export interface SummarizeParams {
 }
 
 export abstract class Provider {
-  #prompt: Prompt
-  constructor(prompt: Prompt) {
-    this.#prompt = prompt
-  }
-
   async summarize(
+    prompt: Prompt,
     text: string,
     params: SummarizeParams
   ): Promise<{ cleanup?: () => void }> {
     try {
-      this.#prompt.params.content = text.trim()
-      return await this.doSummarize(getPromptText(this.#prompt), params)
+      prompt.params.content = text.trim()
+      return await this.doSummarize(getPromptText(prompt), params)
     } catch (err) {
       console.error(err, JSON.stringify(err))
       if (err instanceof ProviderError) {
@@ -42,4 +38,6 @@ export abstract class Provider {
     text: string,
     params: SummarizeParams
   ): Promise<{ cleanup?: () => void }>
+
+  abstract fetchModels(): Promise<string[]>
 }

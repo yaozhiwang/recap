@@ -22,10 +22,10 @@ export async function summarize(port: chrome.runtime.Port, text: string) {
   let provider: Provider
   if (providerType === ProviderType.ChatGPTWebApp) {
     const config = await storage.get<ChatGPTWebAppProviderConfig>(configKey)
-    provider = new ChatGPTWebAppProvider(prompt, config)
+    provider = new ChatGPTWebAppProvider(config)
   } else if (providerType === ProviderType.OpenaiChatApi) {
     const config = await storage.get<OpenAIProviderConfig>(configKey)
-    provider = new OpenAIChatProvider(prompt, config)
+    provider = new OpenAIChatProvider(config)
   } else {
     throw new Error(`Unknown provider ${providerType}`)
   }
@@ -37,7 +37,7 @@ export async function summarize(port: chrome.runtime.Port, text: string) {
     disconnected = true
     cleanup?.()
   })
-  const ret = await provider.summarize(text, {
+  const ret = await provider.summarize(prompt, text, {
     signal: controller.signal,
     onLoading(msg) {
       !disconnected && port.postMessage({ loading: msg })

@@ -6,6 +6,7 @@ import {
   ProviderType
 } from "~config"
 import { classNames } from "~utils"
+import ModelSelect from "./model-select"
 
 export default function ChatGPTWebAppProvider() {
   const [config, setConfig] = useStorage<ChatGPTWebAppProviderConfig>(
@@ -45,6 +46,14 @@ export default function ChatGPTWebAppProvider() {
               </span>
             </Switch.Label>
           </Switch.Group>
+          <div>
+            <label htmlFor="model" className="block text-lg font-medium">
+              Model
+            </label>
+          </div>
+          <div id="model">
+            <ModelSelect providerType={ProviderType.ChatGPTWebApp} />
+          </div>
         </div>
       ) : null}
     </>

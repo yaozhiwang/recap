@@ -2,19 +2,23 @@ import { Listbox, Transition } from "@headlessui/react"
 import { useStorage } from "@plasmohq/storage/hook"
 import { Fragment, useEffect, useState } from "react"
 import {
+  ChatGPTWebModelNames,
   getProviderConfigKey,
   OpenAIProviderConfig,
   ProviderType
 } from "~config"
 import { HiCheck, HiChevronUpDown } from "~icons"
+import { Provider } from "~provider"
+import { ChatGPTWebAppProvider } from "~provider/chatgpt-webapp"
+import { OpenAIChatProvider } from "~provider/openai-chatapi"
 import { classNames } from "~utils"
 
-export default function ModelSelect() {
+export default function ModelSelect(props: { providerType: ProviderType }) {
+  const { providerType } = props
+
   const [models, setModels] = useState<string[]>([])
   const [error, setError] = useState(false)
-  const [config, setConfig] = useStorage<OpenAIProviderConfig>(
-    getProviderConfigKey(ProviderType.OpenaiChatApi)
-  )
+  const [config, setConfig] = useStorage(getProviderConfigKey(providerType))
 
   useEffect(() => {
     if (!config) {
@@ -22,31 +26,17 @@ export default function ModelSelect() {
     }
 
     ;(async () => {
+      let provider: Provider
+      if (providerType === ProviderType.ChatGPTWebApp) {
+        provider = new ChatGPTWebAppProvider(config)
+      } else if (providerType === ProviderType.OpenaiChatApi) {
+        provider = new OpenAIChatProvider(config)
+      } else {
+        throw new Error(`Unknown provider ${providerType}`)
+      }
       try {
-        const resp = await fetch(`${config.apiHost}/v1/models`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${config.apiKey}`
-          }
-        })
-        if (!resp.ok) {
-          setError(true)
-        }
-        const data = await resp.json().catch(() => {
-          setError(true)
-        })
-
-        // https://platform.openai.com/docs/models/model-endpoint-compatibility
-        const chatModels = []
-        for (const model of data.data) {
-          if (
-            model.id.startsWith("gpt-3.5-turbo") ||
-            model.id.startsWith("gpt-4")
-          ) {
-            chatModels.push(model.id)
-          }
-        }
-        setModels(chatModels)
+        const models = await provider.fetchModels()
+        setModels(models)
         setError(false)
       } catch (err) {
         setError(true)
@@ -58,6 +48,11 @@ export default function ModelSelect() {
     return null
   }
 
+  const getModelName = (model: string) => {
+    return providerType === ProviderType.ChatGPTWebApp
+      ? ChatGPTWebModelNames[model] ?? model
+      : model
+  }
   return (
     <div className="flex flex-col gap-1">
       <Listbox
@@ -69,7 +64,9 @@ export default function ModelSelect() {
           <div className="block bg-white text-black dark:bg-neutral-900 dark:text-white">
             <div className="relative w-[250]">
               <Listbox.Button className="relative w-full cursor-default rounded-md py-1 pl-3 pr-10 text-left text-sm leading-6 shadow-sm ring-1 ring-inset ring-neutral-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:ring-neutral-500 dark:focus:ring-indigo-500">
-                <span className="ml-2 block truncate">{config.model}</span>
+                <span className="ml-2 block truncate">
+                  {getModelName(config.model)}
+                </span>
                 <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
                   <HiChevronUpDown
                     className="h-5 w-5 text-neutral-200 dark:text-neutral-500"
@@ -103,7 +100,7 @@ export default function ModelSelect() {
                                 selected ? "font-semibold" : "font-normal",
                                 "ml-3 block truncate"
                               )}>
-                              {model}
+                              {getModelName(model)}
                             </span>
                           </div>
 
@@ -129,8 +126,11 @@ export default function ModelSelect() {
       {error && (
         <div className="text-xs text-red-600">
           <p>
-            Failed to get model list, please check your network or API Host/API
-            Key setting.
+            Failed to get model list, please{" "}
+            {providerType === ProviderType.OpenaiChatApi
+              ? "check your network or API Host/API Key setting"
+              : "login to chatgpt"}
+            .
           </p>
           <p>Will use model: {config.model}</p>
         </div>
