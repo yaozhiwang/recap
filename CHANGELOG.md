@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.2.7] - 2023-06-17
+
+### Added
+
+- Support choosing model used in ChatGPT webapp
+
 ## [v1.2.6] - 2023-06-14
 
 ### Added
