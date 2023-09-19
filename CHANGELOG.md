@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.2.8] - 2023-09-19
+
+### Added
+
+- Support Chain of Density
+
 ## [v1.2.7] - 2023-06-17
 
 ### Added
