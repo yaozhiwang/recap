@@ -1,1 +1,5 @@
 @import "../style.css";
+
+#__plasmo {
+  width: fit-content;
+}
