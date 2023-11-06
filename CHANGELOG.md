@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.2.9] - 2023-11-06
+
+### Fixed
+
+- Popup not shown with full width
+
 ## [v1.2.8] - 2023-09-19
 
 ### Added
